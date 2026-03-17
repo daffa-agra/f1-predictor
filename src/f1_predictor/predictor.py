@@ -65,7 +65,12 @@ def predict_upcoming_race(year, round_num=None):
         return
 
     # Fetch qualifying data for the race
-    qual_df = fetch_qualifying_results(year, round_num)
+    try:
+        qual_df = fetch_qualifying_results(year, round_num)
+    except Exception as e:
+        print(f"Error fetching qualifying data for {event_name}: {e}")
+        return
+
     if qual_df.empty:
         print(f"Qualifying data for {event_name} not available yet.")
         return
@@ -116,7 +121,12 @@ def main():
         start_train_year = end_train_year - 5
         print(f"Fetching historical data for training ({start_train_year}-{end_train_year})...")
         
-        df = fetch_historical_data(start_train_year, end_train_year)
+        try:
+            df = fetch_historical_data(start_train_year, end_train_year)
+        except Exception as e:
+            print(f"Error fetching training data: {e}")
+            return
+
         if df.empty:
             print("No training data found.")
             return

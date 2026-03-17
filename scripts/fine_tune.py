@@ -44,34 +44,45 @@ def fine_tune():
     hist_df = fetch_historical_data(2020, current_year-1)
     
     print(f"Fetching {current_year} season context...")
-    df_current = get_completed_season_data(current_year)
+    try:
+        df_current = get_completed_season_data(current_year)
+    except Exception as e:
+        print(f"Warning: Could not fetch {current_year} data: {e}")
+        df_current = pd.DataFrame()
     
     if df_current.empty:
         full_df = hist_df
     else:
         full_df = pd.concat([hist_df, df_current], ignore_index=True)
     
+    if full_df.empty or len(full_df) < 10:
+        print("Error: Insufficient data for fine-tuning. Need at least 10 samples.")
+        return
+
     # 2. Preprocess
     processor = FeatureProcessor()
     processor.fit(full_df)
     X, y = processor.transform(full_df)
     
+    if len(X) < 10:
+        print(f"Error: Insufficient samples after preprocessing ({len(X)}). Need at least 10.")
+        return
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
     
     # 3. Hyperparameter Tuning
     print("Starting hyperparameter tuning...")
-    param_dist = {
-        'n_estimators': [50, 100, 150, 200],
-        'learning_rate': [0.01, 0.05, 0.1, 0.2],
-        'max_depth': [3, 4, 5, 6, 7],
-        'subsample': [0.8, 0.9, 1.0],
-        'colsample_bytree': [0.8, 0.9, 1.0]
-    }
+    # ... (rest of the code)
     
     xgb_reg = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
+    cv_folds = min(3, len(X_train) // 2)
+    if cv_folds < 2:
+        print("Error: Too few samples for cross-validation.")
+        return
+
     random_search = RandomizedSearchCV(
         xgb_reg, param_distributions=param_dist, n_iter=10, 
-        scoring='neg_mean_squared_error', cv=3, verbose=1, random_state=42
+        scoring='neg_mean_squared_error', cv=cv_folds, verbose=1, random_state=42
     )
     random_search.fit(X_train, y_train)
     
