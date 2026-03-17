@@ -1,0 +1,47 @@
+name: F1 Prediction & Fine-Tune
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    # Run every Monday after a race weekend (UTC)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    # Allow manual triggering from the GitHub Actions tab
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest
+
+      - name: Create data/models directories
+        run: |
+          mkdir -p data/cache models
+
+      - name: Fine-tune & Train
+        # Use our existing fine-tune script to pull available 2026 data
+        run: python3 scripts/fine_tune.py
+
+      - name: Predict Next Race
+        # Automatically detects the next upcoming race
+        run: f1-predictor
+
+      - name: Save Prediction Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: f1-predictions
+          path: |
+            models/f1_pipeline.joblib
+            data/historical_data_*.csv

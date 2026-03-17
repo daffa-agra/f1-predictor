@@ -1,0 +1,2 @@
+[console_scripts]
+f1-predictor = f1_predictor.predictor:main

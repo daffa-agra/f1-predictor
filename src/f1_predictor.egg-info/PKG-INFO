@@ -1,0 +1,62 @@
+Metadata-Version: 2.4
+Name: f1-predictor
+Version: 0.1.0
+Summary: F1 2026 Race Winner Predictor
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: fastf1
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: scikit-learn
+Requires-Dist: xgboost
+Requires-Dist: joblib
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+
+# F1 2026 Season Race Winner Predictor
+
+This software predicts the winner of every Grand Prix in the 2026 Formula 1 season using machine learning and the `fastf1` API.
+
+## Features
+- Fetches historical data (2018-2025) for model training.
+- Uses XGBoost regression to predict driver finishing positions.
+- Incorporates features like:
+  - Qualifying performance
+  - Historical driver and team performance
+  - Track-specific history
+- Predicts winners for any round in the 2026 season.
+
+## Installation
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+### Train the model
+First, train the model on historical data (2024-2025 by default for speed, but can be configured):
+```bash
+python main.py --train
+```
+
+### Predict a race
+Predict the winner of a specific round in 2026 (e.g., Round 1):
+```bash
+python main.py --predict 1 --year 2026
+```
+
+If no round is specified, it will attempt to predict the next upcoming race in the schedule.
+
+## Project Structure
+- `src/f1_predictor/`: Core logic
+  - `data_fetcher.py`: API integration with `fastf1`.
+  - `preprocessor.py`: Feature engineering and data cleaning.
+  - `model.py`: XGBoost model implementation.
+  - `predictor.py`: CLI and prediction logic.
+- `tests/`: Unit tests.
+- `data/cache`: Local cache for `fastf1` data.
+- `models/`: Saved model and encoders.
+
+## Note on 2026 Regulations
+The 2026 season marks a significant change in F1 technical regulations. While this model uses historical data for predictions, initial races of 2026 may have higher variance as the competitive order stabilizes.

@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "f1-predictor"
+version = "0.1.0"
+description = "F1 2026 Race Winner Predictor"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Your Name", email = "your@email.com"}]
+urls = {Homepage = "https://github.com/your-username/f1-predictor"}
+requires-python = ">=3.9"
+dependencies = [
+    "fastf1",
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "xgboost",
+    "joblib",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.scripts]
+f1-predictor = "f1_predictor.predictor:main"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
