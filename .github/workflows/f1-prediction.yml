@@ -9,6 +9,9 @@ on:
   workflow_dispatch:
     # Allow manual triggering from the GitHub Actions tab
 
+permissions:
+  contents: write
+
 jobs:
   predict:
     runs-on: ubuntu-latest
@@ -37,6 +40,13 @@ jobs:
       - name: Predict Next Race
         # Automatically detects the next upcoming race
         run: f1-predictor
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website
 
       - name: Save Prediction Artifacts
         uses: actions/upload-artifact@v4

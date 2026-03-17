@@ -2,7 +2,27 @@ import pandas as pd
 import numpy as np
 import os
 import argparse
+import json
 from datetime import datetime
+
+def export_json(results_df, event_name):
+    """Export top 10 predictions to JSON for the website."""
+    top_10 = results_df.head(10)
+    data = {
+        "event": event_name,
+        "date": datetime.now().strftime("%B %d, %Y"),
+        "top_10": []
+    }
+    for _, row in top_10.iterrows():
+        data["top_10"].append({
+            "name": row.get('BroadcastName', f"Driver {row['DriverNumber']}"),
+            "prediction": float(row['PredictedPosition'])
+        })
+    
+    os.makedirs("website", exist_ok=True)
+    with open("website/predictions.json", "w") as f:
+        json.dump(data, f, indent=4)
+    print("Exported results to website/predictions.json")
 from f1_predictor.data_fetcher import fetch_season_data, fetch_historical_data, fetch_race_results, fetch_qualifying_results
 from f1_predictor.preprocessor import FeatureProcessor
 from f1_predictor.model import ModelPipeline
@@ -72,6 +92,9 @@ def predict_upcoming_race(year, round_num=None):
     results_out = qual_df.copy()
     results_out['PredictedPosition'] = predicted_positions
     results_out = results_out.sort_values('PredictedPosition')
+    
+    # Export for website
+    export_json(results_out, event_name)
     
     print(f"\nPredicted Top 10 for {event_name}:")
     top_10 = results_out.head(10)
