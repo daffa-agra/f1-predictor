@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Predictor Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --f1-red: #e10600;
+            --dark-bg: #15151e;
+            --card-bg: #1f1f27;
+            --text-white: #ffffff;
+            --text-gray: #949498;
+        }
+
+        body {
+            font-family: 'Titillium Web', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: var(--card-bg);
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 4px solid var(--f1-red);
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .race-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .race-info h2 {
+            font-size: 2rem;
+            color: var(--f1-red);
+            margin-bottom: 5px;
+        }
+
+        .race-info p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        .predictions-list {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .driver-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 100px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #2a2a32;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .driver-row:hover {
+            background-color: #2a2a32;
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--f1-red);
+        }
+
+        .name {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .pos-est {
+            text-align: right;
+            color: var(--text-gray);
+            font-family: monospace;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 40px 0;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        #loading {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>F1 Winner Predictor</h1>
+    </header>
+
+    <div class="container">
+        <div id="content" style="display: none;">
+            <div class="race-info">
+                <h2 id="event-name">Next Grand Prix</h2>
+                <p id="prediction-date">Predicted on: March 18, 2026</p>
+            </div>
+
+            <div class="predictions-list" id="predictions-container">
+                <!-- Rows injected by JS -->
+            </div>
+        </div>
+
+        <div id="loading">
+            Calculating results from the simulation...
+        </div>
+    </div>
+
+    <div class="footer">
+        Powered by XGBoost & FastF1 Data • 2026 Prediction Engine
+    </div>
+
+    <script>
+        async function loadPredictions() {
+            try {
+                const response = await fetch('predictions.json');
+                const data = await response.json();
+                
+                document.getElementById('event-name').textContent = data.event;
+                document.getElementById('prediction-date').textContent = `Predicted on: ${data.date}`;
+                
+                const container = document.getElementById('predictions-container');
+                data.top_10.forEach((driver, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'driver-row';
+                    row.innerHTML = `
+                        <div class="rank">${index + 1}</div>
+                        <div class="name">${driver.name}</div>
+                        <div class="pos-est">${driver.prediction.toFixed(2)}</div>
+                    `;
+                    container.appendChild(row);
+                });
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch (error) {
+                document.getElementById('loading').textContent = 'Error loading prediction data. Ensure the GitHub Action has run successfully.';
+            }
+        }
+
+        loadPredictions();
+    </script>
+</body>
+</html>
