@@ -69,20 +69,46 @@ def predict_upcoming_race(year, round_num=None):
         qual_df = fetch_qualifying_results(year, round_num)
     except Exception as e:
         print(f"Error fetching qualifying data for {event_name}: {e}")
-        return
+        qual_df = pd.DataFrame()
 
     if qual_df.empty:
-        print(f"Qualifying data for {event_name} not available yet.")
-        return
+        print(f"Qualifying data for {event_name} not available yet. Falling back to season entries...")
+        # Try to get drivers from the last completed race in the same season
+        schedule = fastf1.get_event_schedule(year)
+        now = pd.Timestamp.now().tz_localize(None)
+        completed = schedule[schedule['Session5DateUtc'].dt.tz_localize(None) < now]
+        
+        if not completed.empty:
+            last_round = completed.iloc[-1]['RoundNumber']
+            print(f"Fetching driver list from Round {last_round}...")
+            try:
+                # Use results from the last race to get the entry list
+                last_race = fetch_race_results(year, last_round)
+                if not last_race.empty:
+                    qual_df = last_race[['DriverNumber', 'BroadcastName', 'Abbreviation', 'TeamName']].copy()
+                    # Assign neutral qualifying positions
+                    qual_df['QualifyingPosition'] = 10
+                    qual_df['GridPosition'] = 10
+                    print(f"Using drivers from Round {last_round} with default qualifying positions.")
+                else:
+                    print("Could not fetch drivers from last race.")
+                    return
+            except Exception as e:
+                print(f"Error fetching fallback driver list: {e}")
+                return
+        else:
+            print(f"No completed races found for {year} to use as fallback.")
+            return
 
     # Enrich qual_df with BroadcastName and Abbreviation/Team if missing
-    try:
-        session = fastf1.get_session(year, round_num, 'Q')
-        session.load(laps=False, telemetry=False, weather=False, messages=False)
-        results = session.results[['DriverNumber', 'BroadcastName', 'Abbreviation', 'TeamName']]
-        qual_df = pd.merge(qual_df, results, on='DriverNumber', how='left')
-    except Exception as e:
-        print(f"Warning: Could not fetch detailed driver info: {e}")
+    if 'BroadcastName' not in qual_df.columns:
+        try:
+            session = fastf1.get_session(year, round_num, 'Q')
+            session.load(laps=False, telemetry=False, weather=False, messages=False)
+            results = session.results[['DriverNumber', 'BroadcastName', 'Abbreviation', 'TeamName']]
+            qual_df = pd.merge(qual_df, results, on='DriverNumber', how='left')
+        except Exception as e:
+            print(f"Warning: Could not fetch detailed driver info: {e}")
     
     # Ensure EventName is present
     qual_df['EventName'] = event_name
