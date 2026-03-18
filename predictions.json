@@ -1,0 +1,46 @@
+{
+    "event": "Japanese Grand Prix",
+    "date": "March 18, 2026",
+    "top_10": [
+        {
+            "name": "M VERSTAPPEN",
+            "prediction": 9.615533828735352
+        },
+        {
+            "name": "O PIASTRI",
+            "prediction": 9.689586639404297
+        },
+        {
+            "name": "L HAMILTON",
+            "prediction": 9.73625373840332
+        },
+        {
+            "name": "G RUSSELL",
+            "prediction": 9.799510955810547
+        },
+        {
+            "name": "L NORRIS",
+            "prediction": 9.8101224899292
+        },
+        {
+            "name": "C LECLERC",
+            "prediction": 9.922134399414062
+        },
+        {
+            "name": "K ANTONELLI",
+            "prediction": 9.932100296020508
+        },
+        {
+            "name": "I HADJAR",
+            "prediction": 10.503841400146484
+        },
+        {
+            "name": "S PEREZ",
+            "prediction": 10.781476020812988
+        },
+        {
+            "name": "A LINDBLAD",
+            "prediction": 10.815373420715332
+        }
+    ]
+}
