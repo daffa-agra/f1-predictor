@@ -3,407 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Predictor Hub | Live Race Insights</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Titillium+Web:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    <title>F1 Predictor Hub | 2026 Season Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Titillium+Web:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-deep: #0B0B0B;
             --bg-card: #151515;
-            --bg-card-hover: #1C1C1C;
             --f1-red: #e10600;
-            --f1-purple: #B026FF; /* Fastest Lap color */
-            --f1-green: #00D21D; /* Personal Best color */
             --text-primary: #FFFFFF;
             --text-secondary: #A0A0A0;
             --border-subtle: rgba(255, 255, 255, 0.08);
-            --accent-blue: #00D2FF;
-            --radius-lg: 20px;
+            --radius-lg: 24px;
             --radius-md: 12px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-deep);
             color: var(--text-primary);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        .app-wrapper {
-            max-width: 1200px;
+        .app-container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
+        }
+
+        /* Header & Event Branding */
+        .event-header {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Navigation */
-        aside {
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: 1fr 400px;
             gap: 40px;
+            margin-bottom: 60px;
+            align-items: center;
         }
 
-        .logo {
+        .event-info h1 {
             font-family: 'Titillium Web', sans-serif;
+            font-size: 4.5rem;
             font-weight: 900;
             font-style: italic;
-            font-size: 1.8rem;
-            letter-spacing: -1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            text-transform: uppercase;
+            line-height: 0.9;
+            margin-bottom: 20px;
         }
 
-        .logo span {
+        .event-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .badge-live {
             background: var(--f1-red);
-            padding: 2px 8px;
+            color: white;
+            padding: 6px 16px;
             border-radius: 4px;
-            font-size: 1.2rem;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        nav li {
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 600;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        nav li.active {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        nav li:hover:not(.active) {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-primary);
-        }
-
-        /* View Toggle (UX Research Implementation) */
-        .view-toggle {
-            margin-top: auto;
-            background: var(--bg-card);
-            padding: 20px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-subtle);
-        }
-
-        .toggle-title {
-            font-size: 0.7rem;
-            font-weight: 800;
+            font-weight: 900;
             text-transform: uppercase;
+            font-size: 0.8rem;
             letter-spacing: 1px;
-            margin-bottom: 12px;
-            color: var(--text-secondary);
-        }
-
-        .toggle-options {
-            display: flex;
-            background: var(--bg-deep);
-            padding: 4px;
-            border-radius: 8px;
-        }
-
-        .toggle-btn {
-            flex: 1;
-            padding: 8px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: transparent;
-            color: var(--text-secondary);
-        }
-
-        .toggle-btn.active {
-            background: var(--f1-red);
-            color: white;
-        }
-
-        /* Main Content */
-        main {
-            padding: 20px 0;
-        }
-
-        /* Hero Section */
-        .hero-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #000 100%);
-            border-radius: var(--radius-lg);
-            padding: 40px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border-subtle);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .badge-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .badge {
-            display: inline-block;
-            background: rgba(225, 6, 0, 0.15);
-            color: var(--f1-red);
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 1px solid rgba(225, 6, 0, 0.3);
-        }
-
-        .badge.live {
-            background: var(--f1-red);
-            color: white;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+            0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; }
         }
 
-        .hero-title {
-            font-family: 'Titillium Web', sans-serif;
-            font-size: 3rem;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-            line-height: 1;
-            margin-bottom: 10px;
-        }
-
-        .hero-subtitle {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Results Table */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .section-header h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .results-container {
+        .circuit-card {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
+            padding: 30px;
             border: 1px solid var(--border-subtle);
+            text-align: center;
+            position: relative;
+        }
+
+        .circuit-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        /* Drivers Grid */
+        .drivers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .driver-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .driver-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-top {
+            height: 180px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            position: relative;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding-right: 10px;
+        }
+
+        .driver-number-bg {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-family: 'Titillium Web', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 5rem;
+            opacity: 0.1;
+            line-height: 1;
+        }
+
+        /* Mocked Driver Headshot via Initial/Number Graphic */
+        .headshot-placeholder {
+            width: 180px;
+            height: 160px;
+            background: linear-gradient(45deg, #222, #444);
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.1);
+            position: relative;
             overflow: hidden;
         }
-
-        .result-row {
-            display: grid;
-            grid-template-columns: 60px 10px 1fr 180px;
-            padding: 18px 25px;
-            align-items: center;
-            border-bottom: 1px solid var(--border-subtle);
-            transition: background 0.2s;
-            cursor: default;
+        
+        .headshot-placeholder::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, var(--team-color, #f1red), transparent);
+            opacity: 0.3;
         }
 
-        .result-row:hover {
-            background: var(--bg-card-hover);
+        .card-body {
+            padding: 25px;
+            border-top: 4px solid var(--team-color, var(--f1-red));
         }
 
-        .result-row:last-child {
-            border-bottom: none;
+        .driver-identity {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
         }
 
-        .pos {
+        .name-container h2 {
+            font-size: 1.5rem;
             font-weight: 800;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .nationality-flag {
             font-size: 1.2rem;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
             color: var(--text-secondary);
         }
 
-        .team-indicator {
-            width: 4px;
-            height: 24px;
-            border-radius: 2px;
-        }
-
-        .driver-info {
-            padding-left: 15px;
-        }
-
-        .driver-name {
+        .team-label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             font-weight: 700;
-            font-size: 1.1rem;
+            margin-bottom: 20px;
             display: block;
         }
 
-        .driver-team {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .score-box {
-            text-align: right;
+        .stats-row {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: var(--radius-md);
         }
 
-        .score-value {
-            font-family: 'Titillium Web', sans-serif;
-            font-weight: 900;
-            font-style: italic;
-            font-size: 1.2rem;
-            color: var(--accent-blue);
-        }
-
-        .score-label {
-            font-size: 0.6rem;
+        .stat-item .label {
+            display: block;
+            font-size: 0.65rem;
             color: var(--text-secondary);
             text-transform: uppercase;
             font-weight: 800;
+            margin-bottom: 4px;
         }
 
-        /* Purist vs Casual Data points (UX Implementation) */
-        .purist-data {
-            display: none;
-            margin-top: 4px;
-            font-size: 0.7rem;
-            color: var(--f1-green);
-            font-weight: 700;
+        .stat-item .value {
+            font-family: 'Titillium Web', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 1.4rem;
         }
 
-        /* Loading Spinner */
+        .rank-tag {
+            background: var(--team-color, var(--f1-red));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 900;
+            font-size: 0.9rem;
+        }
+
+        /* Loading State */
         #loading {
-            grid-column: 1 / -1;
+            height: 80vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 60vh;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid var(--f1-red);
+        .f1-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-subtle);
+            border-top-color: var(--f1-red);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            animation: spin 0.8s linear infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Responsive */
-        @media (max-width: 900px) {
-            .app-wrapper { grid-template-columns: 1fr; }
-            aside { display: none; }
-            .hero-title { font-size: 2rem; }
-            .result-row { grid-template-columns: 50px 10px 1fr 120px; padding: 15px; }
+        @media (max-width: 1000px) {
+            .event-header { grid-template-columns: 1fr; }
+            .event-info h1 { font-size: 3rem; }
+            .circuit-card { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="app-wrapper">
-        <aside>
-            <div class="logo">
-                <span>F1</span> HUB
-            </div>
-            <nav>
-                <ul>
-                    <li class="active">Dashboard</li>
-                    <li>Race Schedule</li>
-                    <li>Driver Standings</li>
-                    <li>Constructor Stats</li>
-                    <li>Settings</li>
-                </ul>
-            </nav>
+    <div class="app-container">
+        <div id="loading">
+            <div class="f1-spinner"></div>
+            <p style="margin-top: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">Syncing 2026 Telemetry...</p>
+        </div>
 
-            <!-- UX Implementation: View Mode Toggle -->
-            <div class="view-toggle">
-                <div class="toggle-title">Dashboard Mode</div>
-                <div class="toggle-options">
-                    <button class="toggle-btn active" onclick="toggleMode('casual', this)">Casual</button>
-                    <button class="toggle-btn" onclick="toggleMode('purist', this)">Purist</button>
-                </div>
-            </div>
-        </aside>
-
-        <main id="main-content">
-            <div id="loading">
-                <div class="spinner"></div>
-                <p style="color: var(--text-secondary); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800;">Syncing Telemetry...</p>
-            </div>
-
-            <div id="dashboard" style="display: none;">
-                <div class="hero-card">
-                    <div class="hero-content">
-                        <div class="badge-row">
-                            <div class="badge live">Live Sync</div>
-                            <div class="badge">Battle Forecast</div>
-                        </div>
-                        <h2 class="hero-title" id="event-name">Grand Prix Simulator</h2>
-                        <p class="hero-subtitle" id="prediction-date">Analyzing session data...</p>
+        <div id="content" style="display: none;">
+            <div class="event-header">
+                <div class="event-info">
+                    <div class="event-meta">
+                        <span class="badge-live">Live Intelligence</span>
+                        <span id="update-date" style="color: var(--text-secondary); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;"></span>
                     </div>
+                    <h1 id="event-name">Japanese Grand Prix</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.2rem; max-width: 600px;">
+                        AI-driven performance simulation using XGBoost regression and 2026 season power unit baselines.
+                    </p>
                 </div>
-
-                <div class="section-header">
-                    <h3>Winning Probability</h3>
-                    <div style="color: var(--text-secondary); font-size: 0.7rem; font-weight: 800; letter-spacing: 1px;">XGBOOST SIMULATION v2.4</div>
-                </div>
-
-                <div class="results-container" id="predictions-list">
-                    <!-- Data injected here -->
+                <div class="circuit-card">
+                    <img id="circuit-img" class="circuit-image" src="" alt="Circuit Layout">
+                    <div style="margin-top: 15px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Official Track Layout</div>
                 </div>
             </div>
-        </main>
+
+            <div class="drivers-grid" id="drivers-list">
+                <!-- Injected via JS -->
+            </div>
+        </div>
     </div>
 
     <script>
@@ -411,21 +294,28 @@
             'Red Bull Racing': '#3671C6', 'McLaren': '#FF8000', 'Ferrari': '#E80020',
             'Mercedes': '#27F4D2', 'Aston Martin': '#229971', 'RB': '#6692FF',
             'Haas F1 Team': '#B6BABD', 'Williams': '#64C4FF', 'Alpine': '#0093CC',
-            'Kick Sauber': '#52E252', 'Alfa Romeo': '#C92D4B', 'AlphaTauri': '#5E8FAA'
+            'Audi': '#FFFFFF', 'Cadillac': '#FAB900', 'Kick Sauber': '#52E252',
+            'Haas': '#B6BABD', 'Sauber': '#52E252'
         };
 
-        // UX Function: Toggle between Casual and Purist views
-        function toggleMode(mode, btn) {
-            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            const puristElements = document.querySelectorAll('.purist-data');
-            if (mode === 'purist') {
-                puristElements.forEach(el => el.style.display = 'block');
-            } else {
-                puristElements.forEach(el => el.style.display = 'none');
-            }
-        }
+        const flagMap = {
+            'NED': '🇳🇱', 'MEX': '🇲🇽', 'GBR': '🇬🇧', 'MON': '🇲🇨', 'AUS': '🇦🇺',
+            'ITA': '🇮🇹', 'ESP': '🇪🇸', 'CAN': '🇨🇦', 'FRA': '🇫🇷', 'THA': '🇹🇭',
+            'JPN': '🇯🇵', 'NZL': '🇳🇿', 'GER': '🇩🇪', 'CHN': '🇨🇳', 'USA': '🇺🇸'
+        };
+
+        // Map event names to FastF1 circuit IDs for images
+        const circuitMap = {
+            'Japanese Grand Prix': 'Suzuka',
+            'Bahrain Grand Prix': 'Bahrain',
+            'Saudi Arabian Grand Prix': 'Jeddah',
+            'Australian Grand Prix': 'Melbourne',
+            'Chinese Grand Prix': 'Shanghai',
+            'Miami Grand Prix': 'Miami',
+            'Emilia Romagna Grand Prix': 'Imola',
+            'Monaco Grand Prix': 'Monaco',
+            'Canadian Grand Prix': 'Montreal'
+        };
 
         async function init() {
             try {
@@ -433,45 +323,61 @@
                 const data = await response.json();
                 
                 document.getElementById('event-name').textContent = data.event;
-                document.getElementById('prediction-date').textContent = `Telemetry Updated: ${data.date}`;
+                document.getElementById('update-date').textContent = data.date;
                 
-                const list = document.getElementById('predictions-list');
-                list.innerHTML = '';
+                // Set circuit image
+                const circuitId = circuitMap[data.event] || 'Monaco';
+                document.getElementById('circuit-img').src = `https://raw.githubusercontent.com/theOehrly/FastF1/master/fastf1/assets/circuit_layouts/${circuitId}.png`;
+
+                const container = document.getElementById('drivers-list');
+                container.innerHTML = '';
 
                 data.top_10.forEach((driver, index) => {
-                    const row = document.createElement('div');
-                    row.className = 'result-row';
-                    
-                    const teamColor = teamColors[driver.team] || '#FFFFFF';
-                    const position = index + 1;
-                    
-                    // UX Implementation: Color rank 1 specially (Golden accent)
-                    const scoreColor = position === 1 ? 'var(--f1-red)' : 'var(--accent-blue)';
-                    
-                    row.innerHTML = `
-                        <div class="pos" style="${position === 1 ? 'color: white' : ''}">${position < 10 ? '0' + position : position}</div>
-                        <div class="team-indicator" style="background: ${teamColor}"></div>
-                        <div class="driver-info">
-                            <span class="driver-name">${driver.name}</span>
-                            <span class="driver-team">${driver.team}</span>
-                            <div class="purist-data">Interval: +${(index * 0.125).toFixed(3)}s</div>
+                    const card = document.createElement('div');
+                    card.className = 'driver-card';
+                    const color = teamColors[driver.team] || '#e10600';
+                    card.style.setProperty('--team-color', color);
+
+                    const flag = flagMap[driver.nationality] || '🏁';
+                    const initial = driver.name.split('. ').pop().charAt(0);
+
+                    card.innerHTML = `
+                        <div class="card-top">
+                            <div class="driver-number-bg">${driver.number}</div>
+                            <div class="headshot-placeholder">
+                                ${initial}${driver.number}
+                            </div>
                         </div>
-                        <div class="score-box">
-                            <span class="score-value" style="color: ${scoreColor}">${driver.prediction.toFixed(4)}</span>
-                            <span class="score-label">${position === 1 ? 'Win Probability' : 'Battle Index'}</span>
+                        <div class="card-body">
+                            <span class="team-label">${driver.team}</span>
+                            <div class="driver-identity">
+                                <div class="name-container">
+                                    <h2>${driver.name}</h2>
+                                </div>
+                                <div class="nationality-flag">${flag} ${driver.nationality}</div>
+                            </div>
+                            <div class="stats-row">
+                                <div class="stat-item">
+                                    <span class="label">Win Probability</span>
+                                    <span class="value" style="color: ${index === 0 ? 'var(--f1-red)' : 'var(--accent-blue)'}">
+                                        ${(100 - (driver.prediction * 5)).toFixed(1)}%
+                                    </span>
+                                </div>
+                                <div class="rank-tag">P${index + 1}</div>
+                            </div>
                         </div>
                     `;
-                    list.appendChild(row);
+                    container.appendChild(card);
                 });
 
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('content').style.display = 'block';
 
-            } catch (error) {
-                console.error('Failed to load predictions:', error);
+            } catch (e) {
+                console.error(e);
                 document.getElementById('loading').innerHTML = `
-                    <div style="color: var(--f1-red); font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Sync Error</div>
-                    <p style="color: var(--text-secondary); margin-top: 10px;">Check network connection to F1 telemetry server.</p>
+                    <p style="color: var(--f1-red); font-weight: 800;">TELEMETRY LINK LOST</p>
+                    <p style="font-size: 0.8rem; margin-top: 10px;">Check 2026 data stream availability.</p>
                 `;
             }
         }

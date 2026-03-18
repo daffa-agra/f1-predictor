@@ -3,44 +3,74 @@
     "date": "March 18, 2026",
     "top_10": [
         {
-            "name": "M VERSTAPPEN",
-            "prediction": 9.615533828735352
-        },
-        {
-            "name": "O PIASTRI",
-            "prediction": 9.689586639404297
-        },
-        {
-            "name": "L HAMILTON",
-            "prediction": 9.73625373840332
-        },
-        {
-            "name": "G RUSSELL",
-            "prediction": 9.799510955810547
+            "name": "E OCON",
+            "prediction": 10.480158805847168,
+            "number": "31",
+            "nationality": "FRA",
+            "team": "Haas F1 Team"
         },
         {
             "name": "L NORRIS",
-            "prediction": 9.8101224899292
+            "prediction": 10.480158805847168,
+            "number": "4",
+            "nationality": "GBR",
+            "team": "McLaren"
         },
         {
-            "name": "C LECLERC",
-            "prediction": 9.922134399414062
+            "name": "L HAMILTON",
+            "prediction": 10.487887382507324,
+            "number": "44",
+            "nationality": "GBR",
+            "team": "Ferrari"
         },
         {
-            "name": "K ANTONELLI",
-            "prediction": 9.932100296020508
-        },
-        {
-            "name": "I HADJAR",
-            "prediction": 10.503841400146484
+            "name": "O PIASTRI",
+            "prediction": 10.49599838256836,
+            "number": "81",
+            "nationality": "AUS",
+            "team": "McLaren"
         },
         {
             "name": "S PEREZ",
-            "prediction": 10.781476020812988
+            "prediction": 10.497884750366211,
+            "number": "11",
+            "nationality": "MEX",
+            "team": "Red Bull Racing"
+        },
+        {
+            "name": "C LECLERC",
+            "prediction": 10.499284744262695,
+            "number": "16",
+            "nationality": "MON",
+            "team": "Ferrari"
+        },
+        {
+            "name": "N HULKENBERG",
+            "prediction": 10.512275695800781,
+            "number": "27",
+            "nationality": "GER",
+            "team": "Audi"
         },
         {
             "name": "A LINDBLAD",
-            "prediction": 10.815373420715332
+            "prediction": 10.536118507385254,
+            "number": "41",
+            "nationality": "FIA",
+            "team": "Racing Bulls"
+        },
+        {
+            "name": "L LAWSON",
+            "prediction": 10.536118507385254,
+            "number": "30",
+            "nationality": "NZL",
+            "team": "RB"
+        },
+        {
+            "name": "G RUSSELL",
+            "prediction": 10.564898490905762,
+            "number": "63",
+            "nationality": "GBR",
+            "team": "Mercedes"
         }
     ]
 }
