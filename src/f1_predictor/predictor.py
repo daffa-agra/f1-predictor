@@ -7,6 +7,32 @@ from datetime import datetime
 
 def export_json(results_df, event_name):
     """Export top 10 predictions to JSON for the website."""
+    # Robust 2026 metadata mapping using Last Names as keys
+    lookup = {
+        'VERSTAPPEN': {'no': '1', 'nat': 'NED', 'team': 'Red Bull Racing'},
+        'PEREZ': {'no': '11', 'nat': 'MEX', 'team': 'Red Bull Racing'},
+        'HAMILTON': {'no': '44', 'nat': 'GBR', 'team': 'Ferrari'},
+        'LECLERC': {'no': '16', 'nat': 'MON', 'team': 'Ferrari'},
+        'NORRIS': {'no': '4', 'nat': 'GBR', 'team': 'McLaren'},
+        'PIASTRI': {'no': '81', 'nat': 'AUS', 'team': 'McLaren'},
+        'RUSSELL': {'no': '63', 'nat': 'GBR', 'team': 'Mercedes'},
+        'ANTONELLI': {'no': '12', 'nat': 'ITA', 'team': 'Mercedes'},
+        'ALONSO': {'no': '14', 'nat': 'ESP', 'team': 'Aston Martin'},
+        'STROLL': {'no': '18', 'nat': 'CAN', 'team': 'Aston Martin'},
+        'GASLY': {'no': '10', 'nat': 'FRA', 'team': 'Alpine'},
+        'DOOHAN': {'no': '7', 'nat': 'AUS', 'team': 'Alpine'},
+        'ALBON': {'no': '23', 'nat': 'THA', 'team': 'Williams'},
+        'SAINZ': {'no': '55', 'nat': 'ESP', 'team': 'Williams'},
+        'TSUNODA': {'no': '22', 'nat': 'JPN', 'team': 'RB'},
+        'LAWSON': {'no': '30', 'nat': 'NZL', 'team': 'RB'},
+        'HULKENBERG': {'no': '27', 'nat': 'GER', 'team': 'Audi'},
+        'BOTTAS': {'no': '77', 'nat': 'FIN', 'team': 'Audi'},
+        'BEARMAN': {'no': '87', 'nat': 'GBR', 'team': 'Haas F1 Team'},
+        'OCON': {'no': '31', 'nat': 'FRA', 'team': 'Haas F1 Team'},
+        'DRUGOVICH': {'no': '24', 'nat': 'BRA', 'team': 'Cadillac'},
+        'PALOU': {'no': '10', 'nat': 'ESP', 'team': 'Cadillac'}
+    }
+
     top_10 = results_df.head(10)
     data = {
         "event": event_name,
@@ -14,15 +40,29 @@ def export_json(results_df, event_name):
         "top_10": []
     }
     for _, row in top_10.iterrows():
+        full_name = row.get('BroadcastName', f"Driver {row['DriverNumber']}").upper()
+        # Find match by checking if any key is in the full name
+        match = None
+        for key in lookup:
+            if key in full_name:
+                match = lookup[key]
+                break
+        
+        meta = match if match else {'no': str(row['DriverNumber']), 'nat': 'FIA', 'team': row.get('TeamName', 'Formula 1 Entry')}
+        
         data["top_10"].append({
-            "name": row.get('BroadcastName', f"Driver {row['DriverNumber']}"),
-            "prediction": float(row['PredictedPosition'])
+            "name": full_name,
+            "prediction": float(row['PredictedPosition']),
+            "number": meta['no'],
+            "nationality": meta['nat'],
+            "team": meta['team']
         })
-    
+
     os.makedirs("website", exist_ok=True)
     with open("website/predictions.json", "w") as f:
         json.dump(data, f, indent=4)
-    print("Exported results to website/predictions.json")
+    print("Exported robust results to website/predictions.json")
+
 from f1_predictor.data_fetcher import fetch_season_data, fetch_historical_data, fetch_race_results, fetch_qualifying_results
 from f1_predictor.preprocessor import FeatureProcessor
 from f1_predictor.model import ModelPipeline
@@ -114,7 +154,7 @@ def predict_upcoming_race(year, round_num=None):
     qual_df['EventName'] = event_name
 
     # Transform for prediction using pre-calculated baselines
-    X_pred = processor.transform_for_prediction(qual_df, pipeline.baselines)
+    X_pred = processor.transform_for_prediction(qual_df, getattr(pipeline, 'baselines', {}))
     
     # Predict
     predicted_positions = model.predict(X_pred)

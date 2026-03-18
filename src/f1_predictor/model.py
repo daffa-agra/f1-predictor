@@ -10,7 +10,7 @@ class ModelPipeline:
     def __init__(self, model=None, processor=None, baselines=None):
         self.model = model
         self.processor = processor
-        self.baselines = baselines
+        self.baselines = baselines or {}
 
     def train(self, X_train, y_train, X_test, y_test):
         """Train the internal XGBRegressor."""
@@ -30,6 +30,7 @@ class ModelPipeline:
         # If processor is available and fitted, sync baselines
         if self.processor and self.processor.is_fitted:
             self.baselines = self.processor.baselines
+            print(f"Synced {len(self.baselines.get('driver_means', {}))} driver baselines to pipeline.")
             
         return mse
 
