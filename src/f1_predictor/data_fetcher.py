@@ -10,6 +10,25 @@ CACHE_DIR = "data/cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 fastf1.Cache.enable_cache(CACHE_DIR)
 
+def save_historical_data(df, path):
+    """Save historical data to CSV without duplicates."""
+    if df.empty:
+        return
+    
+    path = Path(path)
+    os.makedirs(path.parent, exist_ok=True)
+    
+    # Drop duplicates based on Year, RoundNumber, and DriverNumber
+    # This ensures we don't have multiple entries for the same driver in the same race
+    df_clean = df.drop_duplicates(subset=['Year', 'RoundNumber', 'DriverNumber'])
+    
+    # Sort for consistency: Year, RoundNumber, then Position
+    # Handle cases where Position might be NaN (e.g., if data is incomplete)
+    df_clean = df_clean.sort_values(['Year', 'RoundNumber', 'Position'], ascending=[True, True, True])
+    
+    df_clean.to_csv(path, index=False)
+    print(f"Saved {len(df_clean)} records to {path}")
+
 def retry_api_call(max_retries=3, delay=2, backoff=2):
     """Decorator to retry API calls with exponential backoff."""
     def decorator(func):
@@ -92,28 +111,60 @@ def fetch_season_data(year):
     return pd.DataFrame()
 
 def fetch_historical_data(start_year=2018, end_year=2025):
-    """Fetch historical data for multiple seasons and save to CSV."""
-    output_path = Path(f"data/historical_data_{start_year}_{end_year}.csv")
+    """Fetch historical data for multiple seasons and save to CSV, fetching only missing years."""
     generic_path = Path("data/historical_data.csv")
+    legacy_path = Path(f"data/historical_data_{start_year}_{end_year}.csv")
     
-    if output_path.exists():
-        print(f"Loading historical data from {output_path}")
-        return pd.read_csv(output_path)
-    elif generic_path.exists():
-        print(f"Loading historical data from fallback {generic_path}")
-        # Note: In a production app, we should verify the years match, 
-        # but for CI robustness, we use the available file.
-        return pd.read_csv(generic_path)
+    existing_df = pd.DataFrame()
     
-    dfs = []
-    for year in range(start_year, end_year + 1):
-        df = fetch_season_data(year)
-        dfs.append(df)
+    # Try to load existing data
+    if generic_path.exists():
+        print(f"Loading historical data from {generic_path}")
+        existing_df = pd.read_csv(generic_path)
+    elif legacy_path.exists():
+        print(f"Loading historical data from legacy {legacy_path}")
+        existing_df = pd.read_csv(legacy_path)
     
-    if dfs:
-        final_df = pd.concat(dfs, ignore_index=True)
-        final_df.to_csv(output_path, index=False)
-        return final_df
+    # Identify which years we already have
+    if not existing_df.empty and 'Year' in existing_df.columns:
+        existing_years = set(existing_df['Year'].unique())
+    else:
+        existing_years = set()
+    
+    # Determine which years are missing from the requested range
+    requested_years = set(range(start_year, end_year + 1))
+    missing_years = sorted(list(requested_years - existing_years))
+    
+    if not missing_years:
+        print(f"All requested years ({start_year}-{end_year}) are already present in cache.")
+    else:
+        print(f"Fetching data for missing years: {missing_years}")
+        new_dfs = []
+        for year in missing_years:
+            print(f"--- Fetching Season {year} ---")
+            df = fetch_season_data(year)
+            if not df.empty:
+                new_dfs.append(df)
+            else:
+                print(f"Warning: No data fetched for {year}")
+        
+        if new_dfs:
+            # Combine existing and new data
+            all_dfs = [existing_df] if not existing_df.empty else []
+            all_dfs.extend(new_dfs)
+            existing_df = pd.concat(all_dfs, ignore_index=True)
+            
+            # Save the accumulated data to the generic path
+            save_historical_data(existing_df, generic_path)
+            
+            # If we were using the legacy path and it's different, maybe update it?
+            # Actually, the requirement says "Use a consistent naming convention or a primary data/historical_data.csv"
+            # So we'll stick to data/historical_data.csv.
+    
+    # Filter and return the requested range
+    if not existing_df.empty:
+        return existing_df[(existing_df['Year'] >= start_year) & (existing_df['Year'] <= end_year)].copy()
+    
     return pd.DataFrame()
 
 if __name__ == "__main__":

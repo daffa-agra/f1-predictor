@@ -24,6 +24,16 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
+      - name: Cache F1 data and historical CSV
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/cache
+            data/historical_data.csv
+          key: f1-data-cache-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-${{ github.run_id }}
+          restore-keys: |
+            f1-data-cache-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-
+
       - name: Install dependencies
         run: |
           pip install -e .
@@ -54,4 +64,4 @@ jobs:
           name: f1-predictions
           path: |
             models/f1_pipeline.joblib
-            data/historical_data_*.csv
+            data/historical_data.csv
