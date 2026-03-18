@@ -4,8 +4,9 @@ on:
   push:
     branches: [ main ]
   schedule:
-    # Run every Monday after a race weekend (UTC)
-    - cron: '0 9 * * 1'
+    # Run every hour on Fri, Sat, Sun, Mon to catch all sessions (Practice, Quali, Race)
+    # as soon as data is available in the API (usually 30-60 mins post-session).
+    - cron: '0 * * * 5,6,0,1'
   workflow_dispatch:
     # Allow manual triggering from the GitHub Actions tab
 
