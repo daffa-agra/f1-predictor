@@ -7,31 +7,17 @@ from datetime import datetime
 
 def export_json(results_df, event_name):
     """Export top 10 predictions to JSON for the website."""
-    # Robust 2026 metadata mapping using Last Names as keys
-    lookup = {
-        'VERSTAPPEN': {'no': '1', 'nat': 'NED', 'team': 'Red Bull Racing'},
-        'PEREZ': {'no': '11', 'nat': 'MEX', 'team': 'Red Bull Racing'},
-        'HAMILTON': {'no': '44', 'nat': 'GBR', 'team': 'Ferrari'},
-        'LECLERC': {'no': '16', 'nat': 'MON', 'team': 'Ferrari'},
-        'NORRIS': {'no': '4', 'nat': 'GBR', 'team': 'McLaren'},
-        'PIASTRI': {'no': '81', 'nat': 'AUS', 'team': 'McLaren'},
-        'RUSSELL': {'no': '63', 'nat': 'GBR', 'team': 'Mercedes'},
-        'ANTONELLI': {'no': '12', 'nat': 'ITA', 'team': 'Mercedes'},
-        'ALONSO': {'no': '14', 'nat': 'ESP', 'team': 'Aston Martin'},
-        'STROLL': {'no': '18', 'nat': 'CAN', 'team': 'Aston Martin'},
-        'GASLY': {'no': '10', 'nat': 'FRA', 'team': 'Alpine'},
-        'DOOHAN': {'no': '7', 'nat': 'AUS', 'team': 'Alpine'},
-        'ALBON': {'no': '23', 'nat': 'THA', 'team': 'Williams'},
-        'SAINZ': {'no': '55', 'nat': 'ESP', 'team': 'Williams'},
-        'TSUNODA': {'no': '22', 'nat': 'JPN', 'team': 'RB'},
-        'LAWSON': {'no': '30', 'nat': 'NZL', 'team': 'RB'},
-        'HULKENBERG': {'no': '27', 'nat': 'GER', 'team': 'Audi'},
-        'BOTTAS': {'no': '77', 'nat': 'FIN', 'team': 'Audi'},
-        'BEARMAN': {'no': '87', 'nat': 'GBR', 'team': 'Haas F1 Team'},
-        'OCON': {'no': '31', 'nat': 'FRA', 'team': 'Haas F1 Team'},
-        'DRUGOVICH': {'no': '24', 'nat': 'BRA', 'team': 'Cadillac'},
-        'PALOU': {'no': '10', 'nat': 'ESP', 'team': 'Cadillac'}
-    }
+    # Load 2026 driver metadata from config
+    config_path = "config/drivers_2026.json"
+    lookup = {}
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                lookup = json.load(f)
+        except Exception as e:
+            print(f"Error loading {config_path}: {e}")
+    else:
+        print(f"Warning: {config_path} not found.")
 
     top_10 = results_df.head(10)
     data = {
@@ -48,7 +34,12 @@ def export_json(results_df, event_name):
                 match = lookup[key]
                 break
         
-        meta = match if match else {'no': str(row['DriverNumber']), 'nat': 'FIA', 'team': row.get('TeamName', 'Formula 1 Entry')}
+        # Robust fallback for metadata: nationality defaults to UNKNOWN, team to Formula 1 Entry
+        meta = match if match else {
+            'no': str(row.get('DriverNumber', '??')), 
+            'nat': 'UNKNOWN', 
+            'team': row.get('TeamName', 'Formula 1 Entry')
+        }
         
         data["top_10"].append({
             "name": full_name,

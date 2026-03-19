@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OrdinalEncoder
 
 class FeatureProcessor:
     """Stateful feature engineering pipeline for F1 race prediction."""
     
     def __init__(self):
-        self.le_driver = LabelEncoder()
-        self.le_team = LabelEncoder()
-        self.le_event = LabelEncoder()
+        self.le_driver = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
+        self.le_team = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
+        self.le_event = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
         self.baselines = {}
         self.is_fitted = False
         self.feature_cols = [
@@ -21,10 +21,10 @@ class FeatureProcessor:
         # Ensure data is sorted for temporal calculations
         df = df.sort_values(['Year', 'RoundNumber'])
         
-        # Fit LabelEncoders
-        self.le_driver.fit(df['Abbreviation'].unique())
-        self.le_team.fit(df['TeamName'].unique())
-        self.le_event.fit(df['EventName'].unique())
+        # Fit OrdinalEncoders (requires 2D input)
+        self.le_driver.fit(df[['Abbreviation']].drop_duplicates().values)
+        self.le_team.fit(df[['TeamName']].drop_duplicates().values)
+        self.le_event.fit(df[['EventName']].drop_duplicates().values)
         
         # Calculate global baselines (using only historical data) for imputation
         self.baselines['global_mean'] = df['Position'].mean()
@@ -74,10 +74,10 @@ class FeatureProcessor:
         # Calculate features
         df = self._calculate_rolling_features(df)
         
-        # Encode categorical IDs
-        df['DriverID'] = self.le_driver.transform(df['Abbreviation'])
-        df['TeamID'] = self.le_team.transform(df['TeamName'])
-        df['EventID'] = self.le_event.transform(df['EventName'])
+        # Encode categorical IDs (requires 2D input)
+        df['DriverID'] = self.le_driver.transform(df[['Abbreviation']].values).ravel()
+        df['TeamID'] = self.le_team.transform(df[['TeamName']].values).ravel()
+        df['EventID'] = self.le_event.transform(df[['EventName']].values).ravel()
         
         X = df[self.feature_cols]
         y = df['Position']
@@ -110,15 +110,10 @@ class FeatureProcessor:
             # In a more advanced version, we'd store event-driver means too
             event_avg = global_mean
 
-            # Map IDs
-            try:
-                driver_id = self.le_driver.transform([abbr])[0]
-                team_id = self.le_team.transform([team])[0]
-                event_id = self.le_event.transform([event_name])[0]
-            except ValueError:
-                driver_id = 0
-                team_id = 0
-                event_id = 0
+            # Map IDs (requires 2D input)
+            driver_id = self.le_driver.transform([[abbr]])[0, 0]
+            team_id = self.le_team.transform([[team]])[0, 0]
+            event_id = self.le_event.transform([[event_name]])[0, 0]
 
             features = {
                 'QualifyingPosition': driver['QualifyingPosition'],
@@ -134,10 +129,3 @@ class FeatureProcessor:
             
         X_pred = pd.DataFrame(drivers_data)
         return X_pred[self.feature_cols]
-
-def preprocess_data(df):
-    """Legacy wrapper for compatibility during transition."""
-    processor = FeatureProcessor()
-    processor.fit(df)
-    X, y = processor.transform(df)
-    return X, y, processor.le_driver, processor.le_team, processor.le_event

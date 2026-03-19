@@ -1,0 +1,76 @@
+{
+    "event": "Japanese Grand Prix",
+    "date": "March 19, 2026",
+    "top_10": [
+        {
+            "name": "M VERSTAPPEN",
+            "prediction": 6.0865254402160645,
+            "number": "3",
+            "nationality": "NED",
+            "team": "Red Bull Racing"
+        },
+        {
+            "name": "G RUSSELL",
+            "prediction": 8.711464881896973,
+            "number": "63",
+            "nationality": "GBR",
+            "team": "Mercedes"
+        },
+        {
+            "name": "L HAMILTON",
+            "prediction": 9.394489288330078,
+            "number": "44",
+            "nationality": "GBR",
+            "team": "Ferrari"
+        },
+        {
+            "name": "L NORRIS",
+            "prediction": 9.75693416595459,
+            "number": "1",
+            "nationality": "GBR",
+            "team": "McLaren"
+        },
+        {
+            "name": "O PIASTRI",
+            "prediction": 9.932146072387695,
+            "number": "81",
+            "nationality": "AUS",
+            "team": "McLaren"
+        },
+        {
+            "name": "C LECLERC",
+            "prediction": 9.955445289611816,
+            "number": "16",
+            "nationality": "MON",
+            "team": "Ferrari"
+        },
+        {
+            "name": "L LAWSON",
+            "prediction": 9.962203025817871,
+            "number": "30",
+            "nationality": "NZL",
+            "team": "Racing Bulls"
+        },
+        {
+            "name": "I HADJAR",
+            "prediction": 10.141160011291504,
+            "number": "6",
+            "nationality": "FRA",
+            "team": "Red Bull Racing"
+        },
+        {
+            "name": "F ALONSO",
+            "prediction": 10.380043029785156,
+            "number": "14",
+            "nationality": "ESP",
+            "team": "Aston Martin"
+        },
+        {
+            "name": "P GASLY",
+            "prediction": 10.538177490234375,
+            "number": "10",
+            "nationality": "FRA",
+            "team": "Alpine"
+        }
+    ]
+}

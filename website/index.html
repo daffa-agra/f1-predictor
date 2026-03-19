@@ -293,28 +293,44 @@
         const teamColors = {
             'Red Bull Racing': '#3671C6', 'McLaren': '#FF8000', 'Ferrari': '#E80020',
             'Mercedes': '#27F4D2', 'Aston Martin': '#229971', 'RB': '#6692FF',
-            'Haas F1 Team': '#B6BABD', 'Williams': '#64C4FF', 'Alpine': '#0093CC',
-            'Audi': '#FFFFFF', 'Cadillac': '#FAB900', 'Kick Sauber': '#52E252',
-            'Haas': '#B6BABD', 'Sauber': '#52E252'
+            'Racing Bulls': '#6692FF', 'Haas F1 Team': '#B6BABD', 'Williams': '#64C4FF',
+            'Alpine': '#0093CC', 'Audi': '#FFFFFF', 'Cadillac': '#FAB900',
+            'Kick Sauber': '#52E252', 'Haas': '#B6BABD', 'Sauber': '#52E252'
         };
 
         const flagMap = {
             'NED': '🇳🇱', 'MEX': '🇲🇽', 'GBR': '🇬🇧', 'MON': '🇲🇨', 'AUS': '🇦🇺',
             'ITA': '🇮🇹', 'ESP': '🇪🇸', 'CAN': '🇨🇦', 'FRA': '🇫🇷', 'THA': '🇹🇭',
-            'JPN': '🇯🇵', 'NZL': '🇳🇿', 'GER': '🇩🇪', 'CHN': '🇨🇳', 'USA': '🇺🇸'
+            'JPN': '🇯🇵', 'NZL': '🇳🇿', 'GER': '🇩🇪', 'CHN': '🇨🇳', 'USA': '🇺🇸',
+            'ARG': '🇦🇷', 'BRA': '🇧🇷', 'FIN': '🇫🇮'
         };
 
         // Map event names to FastF1 circuit IDs for images
         const circuitMap = {
-            'Japanese Grand Prix': 'Suzuka',
             'Bahrain Grand Prix': 'Bahrain',
             'Saudi Arabian Grand Prix': 'Jeddah',
             'Australian Grand Prix': 'Melbourne',
+            'Japanese Grand Prix': 'Suzuka',
             'Chinese Grand Prix': 'Shanghai',
             'Miami Grand Prix': 'Miami',
             'Emilia Romagna Grand Prix': 'Imola',
             'Monaco Grand Prix': 'Monaco',
-            'Canadian Grand Prix': 'Montreal'
+            'Canadian Grand Prix': 'Montreal',
+            'Spanish Grand Prix': 'Barcelona',
+            'Austrian Grand Prix': 'Spielberg',
+            'British Grand Prix': 'Silverstone',
+            'Hungarian Grand Prix': 'Budapest',
+            'Belgian Grand Prix': 'Spa',
+            'Dutch Grand Prix': 'Zandvoort',
+            'Italian Grand Prix': 'Monza',
+            'Azerbaijan Grand Prix': 'Baku',
+            'Singapore Grand Prix': 'Singapore',
+            'United States Grand Prix': 'Austin',
+            'Mexico City Grand Prix': 'Mexico',
+            'São Paulo Grand Prix': 'Interlagos',
+            'Las Vegas Grand Prix': 'Las Vegas',
+            'Qatar Grand Prix': 'Lusail',
+            'Abu Dhabi Grand Prix': 'Yas Marina'
         };
 
         async function init() {
@@ -360,7 +376,7 @@
                                 <div class="stat-item">
                                     <span class="label">Win Probability</span>
                                     <span class="value" style="color: ${index === 0 ? 'var(--f1-red)' : 'var(--accent-blue)'}">
-                                        ${(100 - (driver.prediction * 5)).toFixed(1)}%
+                                        ${(Math.exp(-Math.pow(driver.prediction - 1, 2) / (2 * 18.0)) * 100).toFixed(1)}%
                                     </span>
                                 </div>
                                 <div class="rank-tag">P${index + 1}</div>

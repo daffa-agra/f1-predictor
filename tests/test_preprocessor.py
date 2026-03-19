@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
-from f1_predictor.preprocessor import preprocess_data
+from f1_predictor.preprocessor import FeatureProcessor
 
-def test_preprocess_data():
+def test_feature_processor_basic():
     # Create sample data
     df = pd.DataFrame({
         'Year': [2024, 2024, 2024, 2024],
@@ -15,7 +15,9 @@ def test_preprocess_data():
         'EventName': ['Bahrain GP', 'Bahrain GP', 'Saudi GP', 'Saudi GP']
     })
     
-    X, y, le_driver, le_team, le_event = preprocess_data(df)
+    processor = FeatureProcessor()
+    processor.fit(df)
+    X, y = processor.transform(df)
     
     # Assertions
     assert len(X) == 4
