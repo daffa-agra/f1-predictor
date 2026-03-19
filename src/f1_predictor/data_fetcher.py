@@ -167,7 +167,49 @@ def fetch_historical_data(start_year=2018, end_year=2025):
     
     return pd.DataFrame()
 
+def fetch_2026_stats():
+    """Fetch all race results for the year 2026 that have already occurred."""
+    schedule = fastf1.get_event_schedule(2026)
+    # Filter for real races (exclude testing)
+    races = schedule[schedule['EventFormat'] != 'testing']
+    
+    # Use current time to find completed races
+    # FastF1 schedule dates are usually aware UTC.
+    # To be safe, we use naive UTC comparison.
+    now = pd.Timestamp.now(tz='UTC').tz_localize(None)
+    
+    all_results = []
+    for _, race in races.iterrows():
+        # Session5Date is typically the race session date
+        race_date = race['Session5Date']
+        if pd.notna(race_date):
+            # Ensure race_date is naive UTC for comparison
+            if race_date.tzinfo is not None:
+                race_date_cmp = race_date.tz_convert('UTC').tz_localize(None)
+            else:
+                race_date_cmp = race_date
+                
+            if race_date_cmp < now:
+                round_num = race['RoundNumber']
+                print(f"Fetching 2026 Round {round_num}: {race['EventName']}")
+                df = fetch_race_results(2026, round_num)
+                if not df.empty:
+                    all_results.append(df)
+    
+    if all_results:
+        return pd.concat(all_results, ignore_index=True)
+    
+    # Return empty DataFrame with the same columns as fetch_race_results
+    cols = ['DriverNumber', 'BroadcastName', 'Abbreviation', 'TeamName', 'Position', 'GridPosition', 'Points', 'Status', 'Year', 'RoundNumber', 'EventName']
+    return pd.DataFrame(columns=cols)
+
 if __name__ == "__main__":
     # Test fetch for 2025 (latest complete season)
     df = fetch_historical_data(2025, 2025)
+    print("--- 2025 Historical Data ---")
     print(df.head())
+    
+    # Test fetch for 2026
+    print("\n--- 2026 Stats ---")
+    df_2026 = fetch_2026_stats()
+    print(df_2026.head())

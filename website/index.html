@@ -69,6 +69,11 @@
             animation: pulse 2s infinite;
         }
 
+        .badge-live.is-forecast {
+            background: #0052cc;
+            animation: none;
+        }
+
         @keyframes pulse {
             0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; }
         }
@@ -334,16 +339,47 @@
         };
 
         async function init() {
+            let data;
+            let isForecast = false;
+            
             try {
                 const response = await fetch('predictions.json');
-                const data = await response.json();
-                
+                if (!response.ok) throw new Error('predictions.json not found');
+                data = await response.json();
+            } catch (e) {
+                console.log('Falling back to forecast.json');
+                try {
+                    const response = await fetch('forecast.json');
+                    if (!response.ok) throw new Error('forecast.json not found');
+                    data = await response.json();
+                    isForecast = true;
+                } catch (e2) {
+                    console.error(e2);
+                    document.getElementById('loading').innerHTML = `
+                        <p style="color: var(--f1-red); font-weight: 800;">TELEMETRY LINK LOST</p>
+                        <p style="font-size: 0.8rem; margin-top: 10px;">Check 2026 data stream availability.</p>
+                    `;
+                    return;
+                }
+            }
+
+            try {
                 document.getElementById('event-name').textContent = data.event;
                 document.getElementById('update-date').textContent = data.date;
                 
                 // Set circuit image
                 const circuitId = circuitMap[data.event] || 'Monaco';
                 document.getElementById('circuit-img').src = `https://raw.githubusercontent.com/theOehrly/FastF1/master/fastf1/assets/circuit_layouts/${circuitId}.png`;
+
+                // Update UI for Forecast Mode
+                if (isForecast) {
+                    const badge = document.querySelector('.badge-live');
+                    badge.textContent = 'Forecast Intelligence';
+                    badge.classList.add('is-forecast');
+                    
+                    const subtext = document.querySelector('.event-info p');
+                    subtext.textContent = 'Pre-race simulation based on historical data and 2026 season power unit baselines.';
+                }
 
                 const container = document.getElementById('drivers-list');
                 container.innerHTML = '';
