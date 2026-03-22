@@ -3,438 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Predictor Hub | 2026 Season Intelligence</title>
+    <title>F1 Predictor Pro | 2026 Season Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Titillium+Web:ital,wght@0,400;0,700;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --bg-deep: #0B0B0B;
-            --bg-card: #151515;
-            --f1-red: #e10600;
-            --text-primary: #FFFFFF;
-            --text-secondary: #A0A0A0;
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --radius-lg: 24px;
-            --radius-md: 12px;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
+        :root { --bg-deep: #050505; --f1-red: #e10600; --accent-blue: #00d2ff; }
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--bg-deep);
-            color: var(--text-primary);
+            color: #ffffff;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(225, 6, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(0, 210, 255, 0.25) 0%, transparent 40%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
         }
-
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        /* Header & Event Branding */
-        .event-header {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 40px;
-            margin-bottom: 60px;
-            align-items: center;
-        }
-
-        .event-info h1 {
-            font-family: 'Titillium Web', sans-serif;
-            font-size: 4.5rem;
-            font-weight: 900;
-            font-style: italic;
-            text-transform: uppercase;
-            line-height: 0.9;
-            margin-bottom: 20px;
-        }
-
-        .event-meta {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .badge-live {
-            background: var(--f1-red);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 4px;
-            font-weight: 900;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            animation: pulse 2s infinite;
-        }
-
-        .badge-live.is-forecast {
-            background: #0052cc;
-            animation: none;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; }
-        }
-
-        .circuit-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 30px;
-            border: 1px solid var(--border-subtle);
-            text-align: center;
-            position: relative;
-        }
-
-        .circuit-image {
-            width: 100%;
-            height: 200px;
-            object-fit: contain;
-            filter: brightness(0) invert(1);
-            opacity: 0.8;
-        }
-
-        /* Drivers Grid */
-        .drivers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .driver-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            border: 1px solid var(--border-subtle);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-        }
-
-        .driver-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .card-top {
-            height: 180px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
-            position: relative;
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-end;
-            padding-right: 10px;
-        }
-
-        .driver-number-bg {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-family: 'Titillium Web', sans-serif;
-            font-weight: 900;
-            font-style: italic;
-            font-size: 5rem;
-            opacity: 0.1;
-            line-height: 1;
-        }
-
-        /* Mocked Driver Headshot via Initial/Number Graphic */
-        .headshot-placeholder {
-            width: 180px;
-            height: 160px;
-            background: linear-gradient(45deg, #222, #444);
-            border-radius: 0 0 10px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: 900;
-            color: rgba(255,255,255,0.1);
-            position: relative;
-            overflow: hidden;
-        }
+        .f1-italic { font-family: 'Titillium Web', sans-serif; font-style: italic; font-weight: 900; text-transform: uppercase; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-8px); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9); }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.9); } }
+        .loading-bar { width: 0%; height: 2px; background: var(--f1-red); animation: load 2.5s forwards cubic-bezier(0.65, 0, 0.35, 1); }
+        @keyframes load { to { width: 100%; } }
         
-        .headshot-placeholder::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 60%;
-            background: linear-gradient(to top, var(--team-color, #f1red), transparent);
-            opacity: 0.3;
-        }
-
-        .card-body {
-            padding: 25px;
-            border-top: 4px solid var(--team-color, var(--f1-red));
-        }
-
-        .driver-identity {
+        .driver-image-container {
+            position: relative;
+            height: 280px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%);
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-
-        .name-container h2 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            line-height: 1.1;
-        }
-
-        .nationality-flag {
-            font-size: 1.2rem;
-            background: rgba(255,255,255,0.1);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-            color: var(--text-secondary);
-        }
-
-        .team-label {
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: var(--radius-md);
-        }
-
-        .stat-item .label {
-            display: block;
-            font-size: 0.65rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-weight: 800;
-            margin-bottom: 4px;
-        }
-
-        .stat-item .value {
-            font-family: 'Titillium Web', sans-serif;
-            font-weight: 900;
-            font-style: italic;
-            font-size: 1.4rem;
-        }
-
-        .rank-tag {
-            background: var(--team-color, var(--f1-red));
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-weight: 900;
-            font-size: 0.9rem;
-        }
-
-        /* Loading State */
-        #loading {
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
+            overflow: hidden;
         }
-
-        .f1-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--border-subtle);
-            border-top-color: var(--f1-red);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .driver-image {
+            height: 300px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7));
+            transition: transform 0.4s;
+            position: relative;
+            z-index: 2;
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media (max-width: 1000px) {
-            .event-header { grid-template-columns: 1fr; }
-            .event-info h1 { font-size: 3rem; }
-            .circuit-card { display: none; }
-        }
+        .glass:hover .driver-image { transform: scale(1.05); }
+        
+        .circuit-glow { filter: drop-shadow(0 0 15px rgba(225, 6, 0, 0.7)); }
+        .venue-card { background: radial-gradient(circle at center, rgba(255,255,255,0.04) 0%, transparent 100%); }
+        .tab-active { border-bottom: 2px solid var(--f1-red); color: #fff; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <div id="loading">
-            <div class="f1-spinner"></div>
-            <p style="margin-top: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">Syncing 2026 Telemetry...</p>
-        </div>
+    <div id="root"></div>
 
-        <div id="content" style="display: none;">
-            <div class="event-header">
-                <div class="event-info">
-                    <div class="event-meta">
-                        <span class="badge-live">Live Intelligence</span>
-                        <span id="update-date" style="color: var(--text-secondary); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;"></span>
-                    </div>
-                    <h1 id="event-name">Japanese Grand Prix</h1>
-                    <p style="color: var(--text-secondary); font-size: 1.2rem; max-width: 600px;">
-                        AI-driven performance simulation using XGBoost regression and 2026 season power unit baselines.
-                    </p>
-                </div>
-                <div class="circuit-card">
-                    <img id="circuit-img" class="circuit-image" src="" alt="Circuit Layout">
-                    <div style="margin-top: 15px; font-weight: 800; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Official Track Layout</div>
-                </div>
-            </div>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-            <div class="drivers-grid" id="drivers-list">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
 
-    <script>
         const teamColors = {
             'Red Bull Racing': '#3671C6', 'McLaren': '#FF8000', 'Ferrari': '#E80020',
             'Mercedes': '#27F4D2', 'Aston Martin': '#229971', 'RB': '#6692FF',
-            'Racing Bulls': '#6692FF', 'Haas F1 Team': '#B6BABD', 'Williams': '#64C4FF',
-            'Alpine': '#0093CC', 'Audi': '#FFFFFF', 'Cadillac': '#FAB900',
-            'Kick Sauber': '#52E252', 'Haas': '#B6BABD', 'Sauber': '#52E252'
+            'Racing Bulls': '#6692FF', 'Haas F1 Team': '#B6BABD', 'Haas': '#B6BABD',
+            'Williams': '#64C4FF', 'Alpine': '#0093CC', 'Audi': '#FFFFFF', 'Cadillac': '#FAB900'
         };
 
-        const flagMap = {
-            'NED': '🇳🇱', 'MEX': '🇲🇽', 'GBR': '🇬🇧', 'MON': '🇲🇨', 'AUS': '🇦🇺',
-            'ITA': '🇮🇹', 'ESP': '🇪🇸', 'CAN': '🇨🇦', 'FRA': '🇫🇷', 'THA': '🇹🇭',
-            'JPN': '🇯🇵', 'NZL': '🇳🇿', 'GER': '🇩🇪', 'CHN': '🇨🇳', 'USA': '🇺🇸',
-            'ARG': '🇦🇷', 'BRA': '🇧🇷', 'FIN': '🇫🇮'
+        const driverRefMap = {
+            'VERSTAPPEN': 'MAXVER01_Max_Verstappen/maxver01',
+            'PEREZ': 'SERPER01_Sergio_Perez/serper01',
+            'HAMILTON': 'LEWHAM01_Lewis_Hamilton/lewham01',
+            'LECLERC': 'CHALEC01_Charles_Leclerc/chalec01',
+            'NORRIS': 'LANNOR01_Lando_Norris/lannor01',
+            'PIASTRI': 'OSCPIA01_Oscar_Piastri/oscpia01',
+            'RUSSELL': 'GEORUS01_George_Russell/georus01',
+            'ALONSO': 'FERALO01_Fernando_Alonso/feralo01',
+            'STROLL': 'LANSTR01_Lance_Stroll/lanstr01',
+            'GASLY': 'PIEGAS01_Pierre_Gasly/piegas01',
+            'ALBON': 'ALEALB01_Alexander_Albon/alealb01',
+            'SAINZ': 'CARSAI01_Carlos_Sainz/carsai01',
+            'HULKENBERG': 'NICHUL01_Nico_Hulkenberg/nichul01',
+            'BOTTAS': 'VALBOT01_Valtteri_Bottas/valbot01',
+            'LAWSON': 'LIALAW01_Liam_Lawson/lialaw01',
+            'HADJAR': 'ISAHAD01_Isack_Hadjar/isahad01',
+            'BEARMAN': 'OLLBEA01_Oliver_Bearman/ollbea01',
+            'ANTONELLI': 'KIMANT01_Kimi_Antonelli/kimant01'
         };
 
-        // Map event names to FastF1 circuit IDs for images
-        const circuitMap = {
-            'Bahrain Grand Prix': 'Bahrain',
-            'Saudi Arabian Grand Prix': 'Jeddah',
-            'Australian Grand Prix': 'Melbourne',
-            'Japanese Grand Prix': 'Suzuka',
-            'Chinese Grand Prix': 'Shanghai',
-            'Miami Grand Prix': 'Miami',
-            'Emilia Romagna Grand Prix': 'Imola',
-            'Monaco Grand Prix': 'Monaco',
-            'Canadian Grand Prix': 'Montreal',
-            'Spanish Grand Prix': 'Barcelona',
-            'Austrian Grand Prix': 'Spielberg',
-            'British Grand Prix': 'Silverstone',
-            'Hungarian Grand Prix': 'Budapest',
-            'Belgian Grand Prix': 'Spa',
-            'Dutch Grand Prix': 'Zandvoort',
-            'Italian Grand Prix': 'Monza',
-            'Azerbaijan Grand Prix': 'Baku',
-            'Singapore Grand Prix': 'Singapore',
-            'United States Grand Prix': 'Austin',
-            'Mexico City Grand Prix': 'Mexico',
-            'São Paulo Grand Prix': 'Interlagos',
-            'Las Vegas Grand Prix': 'Las Vegas',
-            'Qatar Grand Prix': 'Lusail',
-            'Abu Dhabi Grand Prix': 'Yas Marina'
+        // Complete 2026 Season Circuit Map
+        const circuitIdMap = {
+            'Australian Grand Prix': 'melbourne-1',
+            'Chinese Grand Prix': 'shanghai-1',
+            'Japanese Grand Prix': 'suzuka-1',
+            'Bahrain Grand Prix': 'bahrain-1',
+            'Saudi Arabian Grand Prix': 'jeddah-1',
+            'Miami Grand Prix': 'miami-1',
+            'Canadian Grand Prix': 'montreal-1',
+            'Monaco Grand Prix': 'monaco-1',
+            'Spanish Grand Prix': 'catalunya-1',
+            'Austrian Grand Prix': 'spielberg-1',
+            'British Grand Prix': 'silverstone-1',
+            'Belgian Grand Prix': 'spa-francorchamps-1',
+            'Hungarian Grand Prix': 'hungaroring-1',
+            'Dutch Grand Prix': 'zandvoort-1',
+            'Italian Grand Prix': 'monza-1',
+            'Madrid Grand Prix': 'monaco-1', // Fallback for new 2026 street circuit
+            'Azerbaijan Grand Prix': 'baku-1',
+            'Singapore Grand Prix': 'marina-bay-1',
+            'United States Grand Prix': 'austin-1',
+            'Mexican Grand Prix': 'mexico-city-1',
+            'São Paulo Grand Prix': 'interlagos-1',
+            'Las Vegas Grand Prix': 'las-vegas-1',
+            'Qatar Grand Prix': 'lusail-1',
+            'Abu Dhabi Grand Prix': 'yas-marina-1'
         };
 
-        async function init() {
-            let data;
-            let isForecast = false;
+        const getHeadshotUrl = (name) => {
+            const cleanName = name.split(' ').pop().toUpperCase();
+            const ref = driverRefMap[cleanName];
+            if (ref) return `https://media.formula1.com/content/dam/fom-website/drivers/${ref.charAt(0)}/${ref}.png.transform/4col/image.png`;
+            return null;
+        };
+
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const icons = {
+                trophy: <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6m12 5h1.5a2.5 2.5 0 0 0 0-5H18m-2 18H8m4-4V7M7 21a2 2 0 0 1-2-2m14 2a2 2 0 0 0 2-2M15 3H9a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z" />,
+                activity: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
+                map: <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0zM15 5.764v15M9 3.236v15" />,
+                zap: <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />,
+                alert: <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />,
+                command: <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3ZM6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3Z" />
+            };
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {icons[name] || <circle cx="12" cy="12" r="10" />}
+                </svg>
+            );
+        };
+
+        const IntelSection = ({ metrics }) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 lg:mb-24">
+                {metrics.map((item, i) => (
+                    <div key={i} className="glass p-12 rounded-[56px] border-l-[10px] flex flex-col justify-between group" style={{ borderLeftColor: i === 0 ? 'var(--accent-blue)' : i === 1 ? '#00fbff' : 'var(--f1-red)' }}>
+                        <div className="flex items-center gap-6 mb-10">
+                            <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center text-white/20 group-hover:text-white transition-colors">
+                                <Icon name={item.i} size={32} />
+                            </div>
+                            <span className="text-[13px] font-black uppercase tracking-[0.4em] opacity-40">{item.l}</span>
+                        </div>
+                        <div className="flex items-end justify-between">
+                            <span className="text-5xl font-black f1-italic tracking-tighter leading-none">{item.v}</span>
+                            <div className="w-10 h-1.5 bg-white/10 rounded-full"></div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+
+        const VenueCommandCenter = ({ event, date }) => {
+            const circuitSuffix = circuitIdMap[event] || 'monaco-1';
+            const circuitUrl = `https://cdn.jsdelivr.net/gh/julesr0y/f1-circuits-svg@main/circuits/white-outline/${circuitSuffix}.svg`;
             
-            try {
-                const response = await fetch('predictions.json');
-                if (!response.ok) throw new Error('predictions.json not found');
-                data = await response.json();
-            } catch (e) {
-                console.log('Falling back to forecast.json');
-                try {
-                    const response = await fetch('forecast.json');
-                    if (!response.ok) throw new Error('forecast.json not found');
-                    data = await response.json();
-                    isForecast = true;
-                } catch (e2) {
-                    console.error(e2);
-                    document.getElementById('loading').innerHTML = `
-                        <p style="color: var(--f1-red); font-weight: 800;">TELEMETRY LINK LOST</p>
-                        <p style="font-size: 0.8rem; margin-top: 10px;">Check 2026 data stream availability.</p>
-                    `;
-                    return;
-                }
-            }
+            return (
+                <div className="glass venue-card p-16 rounded-[64px] mb-24 lg:mb-32 overflow-hidden relative border-t-4 border-t-f1-red/30">
+                    <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-f1-red/10 to-transparent pointer-events-none"></div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
+                        <div className="order-2 lg:order-1">
+                            <div className="flex items-center gap-8 mb-12">
+                                <div className="w-20 h-20 rounded-[32px] bg-f1-red/15 flex items-center justify-center text-f1-red shadow-2xl border border-f1-red/10"><Icon name="map" size={40} /></div>
+                                <div>
+                                    <h2 className="text-5xl font-black f1-italic tracking-tighter mb-2 uppercase">Venue Analytics</h2>
+                                    <p className="text-white/30 text-lg font-bold tracking-[0.2em] uppercase">{event} • 2026 Telemetry</p>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-10">
+                                {[{ l: "Track DNA", v: "High speed", d: "Aero heavy" }, { l: "Elevation", v: "44.3m Δ", d: "Topography" }, { l: "Turn Count", v: "18", d: "Precision zones" }, { l: "Surface", v: "Bitumen", d: "High grip" }].map((m, i) => (
+                                    <div key={i} className="bg-white/5 p-8 rounded-[40px] border border-white/5">
+                                        <span className="block text-[11px] opacity-40 uppercase font-black tracking-widest mb-3">{m.l}</span>
+                                        <span className="text-4xl font-black f1-italic tracking-tighter leading-none mb-2 block">{m.v}</span>
+                                        <span className="text-[11px] font-bold text-accent-blue/60 uppercase">{m.d}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-12 p-8 bg-accent-blue/5 rounded-[40px] border border-accent-blue/10 flex items-center gap-8">
+                                <div className="flex-1">
+                                    <span className="block text-[11px] opacity-40 uppercase font-black tracking-widest mb-2">Sync Quality</span>
+                                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden"><div className="h-full bg-accent-blue w-[94%]"></div></div>
+                                </div>
+                                <span className="text-2xl font-black f1-italic text-accent-blue">94%</span>
+                            </div>
+                        </div>
+                        <div className="order-1 lg:order-2 flex items-center justify-center p-12 bg-white/5 rounded-[64px] border border-white/5 relative group min-h-[500px]">
+                            <img src={circuitUrl} alt={event} className="w-full h-full max-h-[600px] object-contain circuit-glow hover:scale-110 transition-transform duration-1000 select-none pb-12" />
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-f1-red/30 blur-[140px] -z-10 group-hover:bg-accent-blue/20 transition-colors duration-1000"></div>
+                            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-5 px-10 py-4 bg-f1-red/10 rounded-full border border-f1-red/20">
+                                <div className="w-4 h-4 rounded-full bg-f1-red pulse shadow-[0_0_20px_#e10600]"></div>
+                                <span className="text-[14px] font-black uppercase tracking-[0.3em] text-f1-red">Sector Tracking Online</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
-            try {
-                document.getElementById('event-name').textContent = data.event;
-                document.getElementById('update-date').textContent = data.date;
-                
-                // Set circuit image
-                const circuitId = circuitMap[data.event] || 'Monaco';
-                document.getElementById('circuit-img').src = `https://raw.githubusercontent.com/theOehrly/FastF1/master/fastf1/assets/circuit_layouts/${circuitId}.png`;
+        const DriverCard = ({ driver, rank }) => {
+            const color = teamColors[driver.team] || '#e10600';
+            const headshot = getHeadshotUrl(driver.name);
+            const prob = useMemo(() => (Math.exp(-Math.pow(driver.prediction - 1, 2) / (2 * 15.0)) * 100).toFixed(1), [driver.prediction]);
 
-                // Update UI for Forecast Mode
-                if (isForecast) {
-                    const badge = document.querySelector('.badge-live');
-                    badge.textContent = 'Forecast Intelligence';
-                    badge.classList.add('is-forecast');
+            return (
+                <div className="glass rounded-[56px] overflow-hidden relative group">
+                    <div className="h-2.5 w-full bg-current" style={{ color: color }}></div>
+                    <div className="driver-image-container relative">
+                        <div className="absolute top-8 right-16 f1-italic text-[16rem] opacity-[0.03] leading-none z-0 select-none">{driver.number}</div>
+                        {headshot && <img src={headshot} alt={driver.name} className="driver-image" onError={(e) => e.target.style.display='none'} />}
+                    </div>
+                    <div className="p-12 relative z-10 -mt-10">
+                        <div className="flex justify-between items-start mb-10">
+                            <div>
+                                <span className="text-[12px] font-black uppercase tracking-[0.2em] opacity-40">{driver.team}</span>
+                                <h3 className="text-5xl font-black mt-1 uppercase italic font-f1 tracking-tighter leading-none">{driver.name}</h3>
+                            </div>
+                            <div className="bg-white/5 px-6 py-2 rounded-2xl text-[12px] font-bold uppercase tracking-widest border border-white/5">{driver.nationality}</div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-8 mt-12">
+                            <div className="bg-white/5 p-8 rounded-[40px] border border-white/5 shadow-inner">
+                                <span className="block text-[12px] opacity-40 uppercase font-black tracking-widest mb-3">Win Intensity</span>
+                                <span className="text-5xl font-black text-accent-blue f1-italic leading-none">{prob}%</span>
+                            </div>
+                            <div className="bg-white/5 p-8 rounded-[40px] border border-white/5 flex items-center justify-between shadow-inner">
+                                <div>
+                                    <span className="block text-[12px] opacity-40 uppercase font-black tracking-widest mb-3">Expected</span>
+                                    <span className="text-5xl font-black f1-italic leading-none text-white/90">P{rank}</span>
+                                </div>
+                                {rank <= 3 && <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${rank === 1 ? 'bg-yellow-400/10 text-yellow-400' : 'bg-slate-400/10 text-slate-400'}`}><Icon name="trophy" size={28} /></div>}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [loading, setLoading] = useState(true);
+            const [data, setData] = useState(null);
+            const [testMode, setTestMode] = useState(false);
+            const [currentTestIndex, setCurrentTestIndex] = useState(0);
+
+            const seasonvenues = Object.keys(circuitIdMap);
+
+            useEffect(() => {
+                const load = async () => {
+                    try {
+                        const res = await fetch('predictions.json');
+                        const json = await res.json();
+                        setData(json);
+                    } catch (e) {
+                        setData({ event: "Japanese Grand Prix", date: "March 27, 2026", top_10: [{ name: "M VERSTAPPEN", team: "Red Bull Racing", number: "3", nationality: "NED", prediction: 1.0 }]});
+                    }
+                    setTimeout(() => setLoading(false), 2000);
+                };
+                load();
+            }, []);
+
+            const activeEvent = testMode ? seasonvenues[currentTestIndex] : (data?.event || "Japanese Grand Prix");
+
+            if (loading) return (
+                <div className="h-screen flex flex-col items-center justify-center p-8 bg-[#050505] overflow-hidden">
+                    <div className="relative mb-16 scale-150"><div className="w-32 h-32 border-[5px] border-white/5 border-t-f1-red rounded-full animate-spin"></div></div>
+                    <div className="w-80 h-1 bg-white/5 rounded-full overflow-hidden mt-8"><div className="loading-bar"></div></div>
+                    <p className="f1-italic text-[13px] tracking-[0.5em] opacity-40 uppercase mt-12">Calibrating Season Intelligence</p>
+                </div>
+            );
+
+            const intelMetrics = [
+                { l: "Race Strategy", v: "2-STOP OPTIMAL", i: "zap" },
+                { l: "Rain Liability", v: "14.2% LEVEL 1", i: "activity" },
+                { l: "Safety Car Risk", v: "88% CRITICAL", i: "alert" }
+            ];
+
+            return (
+                <div className="max-w-[1780px] mx-auto px-12 py-20 lg:py-40">
+                    <header className="mb-32">
+                        <div className="flex flex-wrap items-center gap-12 mb-16 px-4">
+                            <div className="bg-f1-red/15 border border-f1-red/30 px-10 py-4 rounded-3xl flex items-center gap-6">
+                                <div className="w-4 h-4 rounded-full bg-f1-red pulse shadow-[0_0_25px_rgba(225,6,0,1)]"></div>
+                                <span className="text-[15px] font-black uppercase tracking-[0.3em] text-f1-red italic">Global Operations Hub</span>
+                            </div>
+                            <div className="flex gap-10 text-[14px] font-black uppercase tracking-[0.3em] opacity-30 font-f1">
+                                <span>2026 SEASON HUB</span>
+                                <span className="text-white opacity-100">•</span>
+                                <span>{data.date}</span>
+                                <span className="text-white opacity-100">•</span>
+                                <span>LIVE GRID METADATA</span>
+                            </div>
+                        </div>
+                        <div className="flex flex-col lg:flex-row justify-between items-end gap-32">
+                            <div className="flex-1">
+                                <h1 className="text-9xl lg:text-[18rem] font-black leading-[0.75] tracking-tighter f1-italic mb-20 select-none uppercase">{activeEvent}</h1>
+                                <p className="text-white/40 text-4xl font-semibold max-w-6xl leading-relaxed italic">
+                                    Next-gen predictive analytics syncing 2026 power cell telemetry with venue DNA. 
+                                    Synchronized across the entire season hub.
+                                </p>
+                            </div>
+                            <div className="flex flex-col gap-8">
+                                <button onClick={() => setTestMode(!testMode)} className={`px-12 py-6 rounded-[32px] border font-black uppercase tracking-widest transition-all ${testMode ? 'bg-f1-red border-f1-red text-white' : 'glass border-white/10 text-white/40'}`}>
+                                    {testMode ? 'Simulator Active' : 'Start Simulator'}
+                                </button>
+                                {testMode && (
+                                    <div className="flex gap-4">
+                                        <button onClick={() => setCurrentTestIndex((c) => (c - 1 + seasonvenues.length) % seasonvenues.length)} className="glass w-16 h-16 rounded-2xl flex items-center justify-center hover:bg-white/10">←</button>
+                                        <button onClick={() => setCurrentTestIndex((c) => (c + 1) % seasonvenues.length)} className="glass w-16 h-16 rounded-2xl flex items-center justify-center hover:bg-white/10">→</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </header>
+
+                    <VenueCommandCenter event={activeEvent} date={data.date} />
                     
-                    const subtext = document.querySelector('.event-info p');
-                    subtext.textContent = 'Pre-race simulation based on historical data and 2026 season power unit baselines.';
-                }
+                    <IntelSection metrics={intelMetrics} />
 
-                const container = document.getElementById('drivers-list');
-                container.innerHTML = '';
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
+                        {data.top_10.map((d, i) => <DriverCard key={d.name} driver={d} rank={i + 1} />)}
+                    </div>
+                </div>
+            );
+        };
 
-                data.top_10.forEach((driver, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'driver-card';
-                    const color = teamColors[driver.team] || '#e10600';
-                    card.style.setProperty('--team-color', color);
-
-                    const flag = flagMap[driver.nationality] || '🏁';
-                    const initial = driver.name.split('. ').pop().charAt(0);
-
-                    card.innerHTML = `
-                        <div class="card-top">
-                            <div class="driver-number-bg">${driver.number}</div>
-                            <div class="headshot-placeholder">
-                                ${initial}${driver.number}
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <span class="team-label">${driver.team}</span>
-                            <div class="driver-identity">
-                                <div class="name-container">
-                                    <h2>${driver.name}</h2>
-                                </div>
-                                <div class="nationality-flag">${flag} ${driver.nationality}</div>
-                            </div>
-                            <div class="stats-row">
-                                <div class="stat-item">
-                                    <span class="label">Win Probability</span>
-                                    <span class="value" style="color: ${index === 0 ? 'var(--f1-red)' : 'var(--accent-blue)'}">
-                                        ${(Math.exp(-Math.pow(driver.prediction - 1, 2) / (2 * 18.0)) * 100).toFixed(1)}%
-                                    </span>
-                                </div>
-                                <div class="rank-tag">P${index + 1}</div>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-
-            } catch (e) {
-                console.error(e);
-                document.getElementById('loading').innerHTML = `
-                    <p style="color: var(--f1-red); font-weight: 800;">TELEMETRY LINK LOST</p>
-                    <p style="font-size: 0.8rem; margin-top: 10px;">Check 2026 data stream availability.</p>
-                `;
-            }
-        }
-
-        init();
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
