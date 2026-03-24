@@ -1,28 +1,24 @@
 import pandas as pd
 import pytest
+import numpy as np
 from f1_predictor.preprocessor import FeatureProcessor
 
 def test_feature_processor_basic():
-    # Create sample data
-    df = pd.DataFrame({
-        'Year': [2024, 2024, 2024, 2024],
-        'RoundNumber': [1, 1, 2, 2],
-        'Abbreviation': ['VER', 'HAM', 'VER', 'HAM'],
-        'TeamName': ['Red Bull', 'Mercedes', 'Red Bull', 'Mercedes'],
-        'Position': [1, 2, 1, 3],
-        'QualifyingPosition': [1, 2, 2, 1],
-        'GridPosition': [1, 2, 2, 1],
-        'EventName': ['Bahrain GP', 'Bahrain GP', 'Saudi GP', 'Saudi GP']
-    })
+    # Create sample data with at least enough history for a default processor (time_steps=5)
+    data = []
+    for rnd in range(1, 8):
+        data.extend([
+            {'Year': 2024, 'RoundNumber': rnd, 'Abbreviation': 'VER', 'TeamName': 'Red Bull', 'Position': 1, 'QualifyingPosition': 1, 'GridPosition': 1, 'EventName': f'Race {rnd}'},
+            {'Year': 2024, 'RoundNumber': rnd, 'Abbreviation': 'HAM', 'TeamName': 'Mercedes', 'Position': 2, 'QualifyingPosition': 2, 'GridPosition': 2, 'EventName': f'Race {rnd}'},
+        ])
+    df = pd.DataFrame(data)
     
-    processor = FeatureProcessor()
+    processor = FeatureProcessor(time_steps=5)
     processor.fit(df)
     X, y = processor.transform(df)
     
     # Assertions
-    assert len(X) == 4
-    assert len(y) == 4
-    assert 'QualifyingPosition' in X.columns
-    assert 'DriverAvgFinish' in X.columns
-    assert y.iloc[0] == 1
-    assert y.iloc[3] == 3
+    # 2 drivers * (7 races - 5 timesteps) = 4 sequences
+    assert X.shape == (4, 5, len(processor.feature_cols))
+    assert y.shape == (4,)
+    assert y[0] in [1, 2] # VER or HAM 6th race

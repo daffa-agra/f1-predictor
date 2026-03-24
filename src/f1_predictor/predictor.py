@@ -144,11 +144,24 @@ def predict_upcoming_race(year, round_num=None):
     # Ensure EventName is present
     qual_df['EventName'] = event_name
 
+    # Fetch history for LSTM sequence logic
+    time_steps = processor.time_steps
+    hist_year_start = year - 1
+    # For a robust system, fetch history dynamically. To simplify here, we assume history is needed.
+    # In a full deployment, you might cache this.
+    try:
+        hist_df = fetch_historical_data(hist_year_start, year)
+        # Keep only data prior to the current race
+        hist_df = hist_df[~((hist_df['Year'] == year) & (hist_df['RoundNumber'] >= round_num))]
+    except Exception as e:
+        print(f"Error fetching historical data: {e}")
+        hist_df = pd.DataFrame()
+
     # Transform for prediction using pre-calculated baselines
-    X_pred = processor.transform_for_prediction(qual_df, getattr(pipeline, 'baselines', {}))
+    X_pred = processor.transform_for_prediction(hist_df, qual_df, getattr(pipeline, 'baselines', {}))
     
     # Predict
-    predicted_positions = model.predict(X_pred)
+    predicted_positions = pipeline.predict(X_pred)
     
     # Map back to drivers
     results_out = qual_df.copy()

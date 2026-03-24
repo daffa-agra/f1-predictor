@@ -12,4 +12,7 @@ src/f1_predictor.egg-info/entry_points.txt
 src/f1_predictor.egg-info/requires.txt
 src/f1_predictor.egg-info/top_level.txt
 tests/test_data_fetcher.py
+tests/test_encoding_stability.py
+tests/test_feature_processor.py
+tests/test_incremental_fetching.py
 tests/test_preprocessor.py

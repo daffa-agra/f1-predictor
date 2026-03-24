@@ -1,8 +1,32 @@
-import xgboost as xgb
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import joblib
 import os
+import numpy as np
+
+class LSTMModel(nn.Module):
+    def __init__(self, input_size, hidden_size=64, num_layers=1, dropout=0.2):
+        super(LSTMModel, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, dropout=dropout if num_layers > 1 else 0.0)
+        # Apply dropout manually if only 1 layer
+        self.dropout = nn.Dropout(dropout)
+        self.fc1 = nn.Linear(hidden_size, 32)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(32, 1)
+
+    def forward(self, x):
+        # x shape: (batch, time_steps, features)
+        out, _ = self.lstm(x)
+        # Take the output of the last time step
+        out = out[:, -1, :]
+        out = self.dropout(out)
+        out = self.fc1(out)
+        out = self.relu(out)
+        out = self.fc2(out)
+        return out
 
 class ModelPipeline:
     """Unified container for FeatureProcessor, the ML model, and baseline stats."""
@@ -11,20 +35,70 @@ class ModelPipeline:
         self.model = model
         self.processor = processor
         self.baselines = baselines or {}
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def train(self, X_train, y_train, X_test, y_test):
-        """Train the internal XGBRegressor."""
-        self.model = xgb.XGBRegressor(
-            n_estimators=100,
-            learning_rate=0.1,
-            max_depth=5,
-            objective='reg:squarederror',
-            random_state=42
-        )
-        self.model.fit(X_train, y_train)
+        """Train the internal LSTM Model using PyTorch."""
+        if X_train.shape[0] == 0:
+            raise ValueError("Training data is empty. Cannot train the model.")
+            
+        time_steps = X_train.shape[1]
+        features = X_train.shape[2]
+
+        # Convert to PyTorch tensors
+        X_train_t = torch.tensor(X_train, dtype=torch.float32).to(self.device)
+        y_train_t = torch.tensor(y_train, dtype=torch.float32).view(-1, 1).to(self.device)
+        X_test_t = torch.tensor(X_test, dtype=torch.float32).to(self.device)
+        y_test_t = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
+
+        if self.model is None:
+            self.model = LSTMModel(input_size=features).to(self.device)
         
-        preds = self.model.predict(X_test)
-        mse = mean_squared_error(y_test, preds)
+        criterion = nn.MSELoss()
+        optimizer = optim.Adam(self.model.parameters(), lr=0.001)
+
+        dataset = torch.utils.data.TensorDataset(X_train_t, y_train_t)
+        dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
+
+        # Basic EarlyStopping setup
+        patience = 5
+        best_loss = float('inf')
+        patience_counter = 0
+        best_model_state = None
+
+        epochs = 50
+        for epoch in range(epochs):
+            self.model.train()
+            for batch_x, batch_y in dataloader:
+                optimizer.zero_grad()
+                outputs = self.model(batch_x)
+                loss = criterion(outputs, batch_y)
+                loss.backward()
+                optimizer.step()
+                
+            self.model.eval()
+            with torch.no_grad():
+                val_outputs = self.model(X_test_t)
+                val_loss = criterion(val_outputs, y_test_t).item()
+                
+            if val_loss < best_loss:
+                best_loss = val_loss
+                best_model_state = self.model.state_dict()
+                patience_counter = 0
+            else:
+                patience_counter += 1
+                
+            if patience_counter >= patience:
+                break
+                
+        # Restore best weights
+        if best_model_state is not None:
+            self.model.load_state_dict(best_model_state)
+            
+        self.model.eval()
+        with torch.no_grad():
+            preds = self.model(X_test_t).cpu().numpy().flatten()
+            mse = mean_squared_error(y_test, preds)
         print(f"Model trained with MSE: {mse:.2f}")
         
         # If processor is available and fitted, sync baselines
@@ -38,37 +112,61 @@ class ModelPipeline:
         """Run inference using the internal model."""
         if self.model is None:
             raise ValueError("Model not trained.")
-        return self.model.predict(X)
+        self.model.eval()
+        X_t = torch.tensor(X, dtype=torch.float32).to(self.device)
+        with torch.no_grad():
+            preds = self.model(X_t).cpu().numpy().flatten()
+        return preds
 
     def save(self, path="models/f1_pipeline.joblib"):
-        """Save the entire pipeline to disk."""
+        """Save the entire pipeline to disk. Needs custom saving for PyTorch model."""
         os.makedirs(os.path.dirname(path), exist_ok=True)
+        
+        pytorch_model = self.model
+        self.model = None
+        
+        # Save pipeline without the model
         joblib.dump(self, path)
-        print(f"ModelPipeline saved to {path}")
+        
+        # Save the PyTorch model separately
+        if pytorch_model is not None:
+            model_path = path.replace('.joblib', '_torch.pth')
+            torch.save({
+                'state_dict': pytorch_model.state_dict(),
+                'input_size': pytorch_model.lstm.input_size
+            }, model_path)
+        
+        self.model = pytorch_model
+        print(f"ModelPipeline saved to {path} and model to {path.replace('.joblib', '_torch.pth')}")
 
     @classmethod
     def load(cls, path="models/f1_pipeline.joblib"):
         """Load the entire pipeline from disk."""
-        return joblib.load(path)
+        pipeline = joblib.load(path)
+        model_path = path.replace('.joblib', '_torch.pth')
+        if os.path.exists(model_path):
+            checkpoint = torch.load(model_path, map_location=pipeline.device, weights_only=True)
+            model = LSTMModel(input_size=checkpoint['input_size']).to(pipeline.device)
+            model.load_state_dict(checkpoint['state_dict'])
+            pipeline.model = model
+        return pipeline
 
 def train_model(X, y):
     """Legacy wrapper for backward compatibility or direct training."""
+    # This wrapper is simplified. Normally we would use the pipeline.
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    model = xgb.XGBRegressor(
-        n_estimators=100,
-        learning_rate=0.1,
-        max_depth=5,
-        objective='reg:squarederror',
-        random_state=42
-    )
-    model.fit(X_train, y_train)
-    return model
+    pipeline = ModelPipeline()
+    pipeline.train(X_train, y_train, X_test, y_test)
+    return pipeline.model
 
 def save_model(model, le_driver, le_team, le_event):
     """Legacy save function."""
     output_dir = "models"
     os.makedirs(output_dir, exist_ok=True)
-    joblib.dump(model, os.path.join(output_dir, "f1_model.joblib"))
+    torch.save({
+        'state_dict': model.state_dict(),
+        'input_size': model.lstm.input_size
+    }, os.path.join(output_dir, "f1_model_torch.pth"))
     joblib.dump(le_driver, os.path.join(output_dir, "le_driver.joblib"))
     joblib.dump(le_team, os.path.join(output_dir, "le_team.joblib"))
     joblib.dump(le_event, os.path.join(output_dir, "le_event.joblib"))
@@ -76,7 +174,9 @@ def save_model(model, le_driver, le_team, le_event):
 def load_model():
     """Legacy load function."""
     output_dir = "models"
-    model = joblib.load(os.path.join(output_dir, "f1_model.joblib"))
+    checkpoint = torch.load(os.path.join(output_dir, "f1_model_torch.pth"), weights_only=True)
+    model = LSTMModel(input_size=checkpoint['input_size'])
+    model.load_state_dict(checkpoint['state_dict'])
     le_driver = joblib.load(os.path.join(output_dir, "le_driver.joblib"))
     le_team = joblib.load(os.path.join(output_dir, "le_team.joblib"))
     le_event = joblib.load(os.path.join(output_dir, "le_event.joblib"))

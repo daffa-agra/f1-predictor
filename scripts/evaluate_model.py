@@ -22,7 +22,8 @@ def calculate_metrics(predicted_df, actual_df):
 
 def evaluate(year, rounds):
     pipeline = ModelPipeline.load()
-    hist_df = fetch_historical_data(year-1, year)
+    hist_year_start = year - 1
+    full_hist_df = fetch_historical_data(hist_year_start, year)
     
     all_metrics = []
     
@@ -38,9 +39,12 @@ def evaluate(year, rounds):
         qual_df = pd.merge(qual_df, results, on='DriverNumber', how='left')
         qual_df['EventName'] = session.event['EventName']
         
+        # Filter history for current round
+        hist_df = full_hist_df[~((full_hist_df['Year'] == year) & (full_hist_df['RoundNumber'] >= r))]
+
         # Predict
-        X_pred = pipeline.processor.transform_for_prediction(qual_df, hist_df)
-        preds = pipeline.model.predict(X_pred)
+        X_pred = pipeline.processor.transform_for_prediction(hist_df, qual_df)
+        preds = pipeline.predict(X_pred)
         
         pred_df = qual_df.copy()
         pred_df['PredictedPosition'] = preds
@@ -54,7 +58,7 @@ def evaluate(year, rounds):
     avg_top10 = np.mean([m[1] for m in all_metrics])
     avg_mae = np.mean([m[2] for m in all_metrics])
     
-    print(f"\nOverall Success Rate (2026 R1-R2):")
+    print(f"\nOverall Success Rate ({year} R{rounds[0]}-R{rounds[-1]}):")
     print(f"Avg Podium Accuracy: {avg_podium*100:.1f}%")
     print(f"Avg Top 10 Accuracy: {avg_top10*100:.1f}%")
     print(f"Avg Position MAE:    {avg_mae:.2f}")
