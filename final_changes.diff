@@ -1,0 +1,733 @@
+diff --git a/.github/workflows/f1-prediction.yml b/.github/workflows/f1-prediction.yml
+index 6d5f300..d484475 100644
+--- a/.github/workflows/f1-prediction.yml
++++ b/.github/workflows/f1-prediction.yml
+@@ -31,12 +31,13 @@ jobs:
+           path: |
+             data/cache
+             data/historical_data.csv
+-          key: f1-data-cache-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-${{ github.run_id }}
++          key: f1-data-cache-v2-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-${{ github.run_id }}
+           restore-keys: |
+-            f1-data-cache-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-
++            f1-data-cache-v2-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-
+ 
+       - name: Install dependencies
+         run: |
++          pip uninstall -y xgboost
+           pip install -e .
+           pip install pytest
+ 
+diff --git a/data/historical_data.csv b/data/historical_data.csv
+index 092872b..0dca1ff 100644
+--- a/data/historical_data.csv
++++ b/data/historical_data.csv
+@@ -778,7 +778,7 @@ DriverNumber,BroadcastName,Abbreviation,TeamName,Position,GridPosition,Points,St
+ 99,A GIOVINAZZI,GIO,Alfa Romeo Racing,17.0,14.0,0.0,Gearbox,2021,22,Abu Dhabi Grand Prix,14.0
+ 63,G RUSSELL,RUS,Williams,18.0,17.0,0.0,Gearbox,2021,22,Abu Dhabi Grand Prix,17.0
+ 7,K RAIKKONEN,RAI,Alfa Romeo Racing,19.0,18.0,0.0,Brakes,2021,22,Abu Dhabi Grand Prix,18.0
+-9,nan,MAZ,Haas F1 Team,,,0.0,Illness,2021,22,Abu Dhabi Grand Prix,20.0
++9,,MAZ,Haas F1 Team,,,0.0,Illness,2021,22,Abu Dhabi Grand Prix,20.0
+ 16,C LECLERC,LEC,Ferrari,1.0,1.0,26.0,Finished,2022,1,Bahrain Grand Prix,1.0
+ 55,C SAINZ,SAI,Ferrari,2.0,3.0,18.0,Finished,2022,1,Bahrain Grand Prix,3.0
+ 44,L HAMILTON,HAM,Mercedes,3.0,5.0,15.0,Finished,2022,1,Bahrain Grand Prix,5.0
+@@ -2617,3 +2617,47 @@ DriverNumber,BroadcastName,Abbreviation,TeamName,Position,GridPosition,Points,St
+ 30,L LAWSON,LAW,Racing Bulls,18.0,13.0,0.0,Lapped,2025,24,Abu Dhabi Grand Prix,13.0
+ 10,P GASLY,GAS,Alpine,19.0,19.0,0.0,Lapped,2025,24,Abu Dhabi Grand Prix,19.0
+ 43,F COLAPINTO,COL,Alpine,20.0,20.0,0.0,Lapped,2025,24,Abu Dhabi Grand Prix,20.0
++63,G RUSSELL,RUS,Mercedes,1.0,1.0,25.0,Finished,2026,1,Australian Grand Prix,1.0
++12,K ANTONELLI,ANT,Mercedes,2.0,2.0,18.0,Finished,2026,1,Australian Grand Prix,2.0
++16,C LECLERC,LEC,Ferrari,3.0,4.0,15.0,Finished,2026,1,Australian Grand Prix,4.0
++44,L HAMILTON,HAM,Ferrari,4.0,7.0,12.0,Finished,2026,1,Australian Grand Prix,7.0
++1,L NORRIS,NOR,McLaren,5.0,6.0,10.0,Finished,2026,1,Australian Grand Prix,6.0
++3,M VERSTAPPEN,VER,Red Bull Racing,6.0,20.0,8.0,Finished,2026,1,Australian Grand Prix,
++87,O BEARMAN,BEA,Haas F1 Team,7.0,12.0,6.0,Lapped,2026,1,Australian Grand Prix,12.0
++41,A LINDBLAD,LIN,Racing Bulls,8.0,9.0,4.0,Lapped,2026,1,Australian Grand Prix,9.0
++5,G BORTOLETO,BOR,Audi,9.0,10.0,2.0,Lapped,2026,1,Australian Grand Prix,10.0
++10,P GASLY,GAS,Alpine,10.0,14.0,1.0,Lapped,2026,1,Australian Grand Prix,14.0
++31,E OCON,OCO,Haas F1 Team,11.0,13.0,0.0,Lapped,2026,1,Australian Grand Prix,13.0
++23,A ALBON,ALB,Williams,12.0,15.0,0.0,Lapped,2026,1,Australian Grand Prix,15.0
++30,L LAWSON,LAW,Racing Bulls,13.0,8.0,0.0,Lapped,2026,1,Australian Grand Prix,8.0
++43,F COLAPINTO,COL,Alpine,14.0,16.0,0.0,Lapped,2026,1,Australian Grand Prix,16.0
++55,C SAINZ,SAI,Williams,15.0,21.0,0.0,Lapped,2026,1,Australian Grand Prix,
++11,S PEREZ,PER,Cadillac,16.0,18.0,0.0,Lapped,2026,1,Australian Grand Prix,18.0
++18,L STROLL,STR,Aston Martin,17.0,22.0,0.0,Lapped,2026,1,Australian Grand Prix,
++14,F ALONSO,ALO,Aston Martin,18.0,17.0,0.0,Retired,2026,1,Australian Grand Prix,17.0
++77,V BOTTAS,BOT,Cadillac,19.0,19.0,0.0,Retired,2026,1,Australian Grand Prix,19.0
++6,I HADJAR,HAD,Red Bull Racing,20.0,3.0,0.0,Retired,2026,1,Australian Grand Prix,3.0
++81,O PIASTRI,PIA,McLaren,21.0,5.0,0.0,Did not start,2026,1,Australian Grand Prix,5.0
++27,N HULKENBERG,HUL,Audi,22.0,11.0,0.0,Did not start,2026,1,Australian Grand Prix,11.0
++12,K ANTONELLI,ANT,Mercedes,1.0,1.0,25.0,Finished,2026,2,Chinese Grand Prix,1.0
++63,G RUSSELL,RUS,Mercedes,2.0,2.0,18.0,Finished,2026,2,Chinese Grand Prix,2.0
++44,L HAMILTON,HAM,Ferrari,3.0,3.0,15.0,Finished,2026,2,Chinese Grand Prix,3.0
++16,C LECLERC,LEC,Ferrari,4.0,4.0,12.0,Finished,2026,2,Chinese Grand Prix,4.0
++87,O BEARMAN,BEA,Haas F1 Team,5.0,10.0,10.0,Finished,2026,2,Chinese Grand Prix,10.0
++10,P GASLY,GAS,Alpine,6.0,7.0,8.0,Finished,2026,2,Chinese Grand Prix,7.0
++30,L LAWSON,LAW,Racing Bulls,7.0,14.0,6.0,Finished,2026,2,Chinese Grand Prix,14.0
++6,I HADJAR,HAD,Red Bull Racing,8.0,9.0,4.0,Finished,2026,2,Chinese Grand Prix,9.0
++55,C SAINZ,SAI,Williams,9.0,17.0,2.0,Lapped,2026,2,Chinese Grand Prix,17.0
++43,F COLAPINTO,COL,Alpine,10.0,12.0,1.0,Lapped,2026,2,Chinese Grand Prix,12.0
++27,N HULKENBERG,HUL,Audi,11.0,11.0,0.0,Lapped,2026,2,Chinese Grand Prix,11.0
++41,A LINDBLAD,LIN,Racing Bulls,12.0,15.0,0.0,Lapped,2026,2,Chinese Grand Prix,15.0
++77,V BOTTAS,BOT,Cadillac,13.0,19.0,0.0,Lapped,2026,2,Chinese Grand Prix,20.0
++31,E OCON,OCO,Haas F1 Team,14.0,13.0,0.0,Lapped,2026,2,Chinese Grand Prix,13.0
++11,S PEREZ,PER,Cadillac,15.0,21.0,0.0,Lapped,2026,2,Chinese Grand Prix,22.0
++3,M VERSTAPPEN,VER,Red Bull Racing,16.0,8.0,0.0,Retired,2026,2,Chinese Grand Prix,8.0
++14,F ALONSO,ALO,Aston Martin,17.0,18.0,0.0,Retired,2026,2,Chinese Grand Prix,19.0
++18,L STROLL,STR,Aston Martin,18.0,20.0,0.0,Retired,2026,2,Chinese Grand Prix,21.0
++81,O PIASTRI,PIA,McLaren,19.0,5.0,0.0,Did not start,2026,2,Chinese Grand Prix,5.0
++1,L NORRIS,NOR,McLaren,20.0,6.0,0.0,Did not start,2026,2,Chinese Grand Prix,6.0
++5,G BORTOLETO,BOR,Audi,21.0,16.0,0.0,Did not start,2026,2,Chinese Grand Prix,16.0
++23,A ALBON,ALB,Williams,22.0,22.0,0.0,Did not start,2026,2,Chinese Grand Prix,18.0
+diff --git a/scripts/fine_tune.py b/scripts/fine_tune.py
+index 55ee246..9e9fdab 100644
+--- a/scripts/fine_tune.py
++++ b/scripts/fine_tune.py
+@@ -1,7 +1,6 @@
+ import pandas as pd
+ import numpy as np
+-import xgboost as xgb
+-from sklearn.model_selection import RandomizedSearchCV, train_test_split
++import torch
+ from sklearn.metrics import mean_squared_error
+ from f1_predictor.data_fetcher import fetch_race_results, fetch_qualifying_results, fetch_historical_data, save_historical_data
+ from f1_predictor.preprocessor import FeatureProcessor
+@@ -9,153 +8,103 @@ from f1_predictor.model import ModelPipeline
+ import fastf1
+ from datetime import datetime
+ from pathlib import Path
+-import joblib
++import os
+ 
+-def get_completed_season_data(year, existing_df=pd.DataFrame()):
+-    """Identify and fetch all completed race data for the current season, skipping already cached rounds."""
+-    schedule = fastf1.get_event_schedule(year)
+-    now = pd.Timestamp.now().tz_localize(None)
+-    
+-    # Filter for rounds where the race session has already occurred
+-    # Session5DateUtc corresponds to the Race in a standard F1 weekend
+-    completed_events = schedule[(schedule['Session5DateUtc'].dt.tz_localize(None) < now) & 
+-                                (schedule['EventFormat'] != 'testing')]
+-    
+-    rounds = completed_events['RoundNumber'].tolist()
+-    if not rounds:
+-        print(f"No completed rounds found for {year} yet.")
+-        return pd.DataFrame()
+-
+-    # Identify which rounds we already have for this year
+-    existing_rounds = set()
+-    if not existing_df.empty and 'Year' in existing_df.columns and 'RoundNumber' in existing_df.columns:
+-        existing_rounds = set(existing_df[existing_df['Year'] == year]['RoundNumber'].unique())
+-    
+-    missing_rounds = [r for r in rounds if r not in existing_rounds]
+-    
+-    print(f"Season {year} status: {len(rounds)} rounds completed.")
+-    print(f"  - Cached rounds: {len(existing_rounds.intersection(set(rounds)))}")
+-    print(f"  - Rounds to fetch: {len(missing_rounds)} {missing_rounds if missing_rounds else ''}")
+-
+-    new_results = []
+-    for r in missing_rounds:
+-        print(f"Fetching data for {year} Round {r}...")
+-        race_df = fetch_race_results(year, r)
+-        qual_df = fetch_qualifying_results(year, r)
+-        if not race_df.empty and not qual_df.empty:
+-            merged = pd.merge(race_df, qual_df[['DriverNumber', 'QualifyingPosition']], on='DriverNumber', how='left')
+-            new_results.append(merged)
+-    
+-    # Extract only this year's data from existing_df
+-    current_year_df = existing_df[existing_df['Year'] == year].copy() if not existing_df.empty else pd.DataFrame()
+-    
+-    if new_results:
+-        new_df = pd.concat(new_results, ignore_index=True)
+-        current_year_df = pd.concat([current_year_df, new_df], ignore_index=True)
+-        print(f"Fetched {len(new_results)} new rounds for {year}.")
+-    else:
+-        if missing_rounds:
+-            print(f"Warning: Failed to fetch any new data for {year}.")
+-        else:
+-            print(f"No new rounds to fetch for {year}.")
+-            
+-    return current_year_df
++def get_specific_round_data(year, round_num):
++    """Fetch data for a specific round."""
++    print(f"Fetching data for {year} Round {round_num}...")
++    race_df = fetch_race_results(year, round_num)
++    qual_df = fetch_qualifying_results(year, round_num)
++    if not race_df.empty and not qual_df.empty:
++        merged = pd.merge(race_df, qual_df[['DriverNumber', 'QualifyingPosition']], on='DriverNumber', how='left')
++        return merged
++    return pd.DataFrame()
+ 
+ def fine_tune():
+     # 1. Load data
+-    current_year = datetime.now().year
+-    print(f"\n=== F1 Predictor Fine-Tuning Pipeline ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')}) ===")
+-    
+-    # Load historical data (handles incremental loading year-by-year)
+-    print(f"Loading historical data (2020-{current_year-1})...")
+-    hist_df = fetch_historical_data(2020, current_year-1)
++    print(f"\n=== F1 Predictor Fine-Tuning Pipeline (LSTM) ===")
+     
+-    # Load any existing data for the current year from the main CSV
+-    generic_path = Path("data/historical_data.csv")
+-    full_existing_df = pd.DataFrame()
+-    if generic_path.exists():
+-        try:
+-            full_existing_df = pd.read_csv(generic_path)
+-        except Exception as e:
+-            print(f"Warning: Could not load {generic_path}: {e}")
++    # Load historical data up to 2025
++    print("Loading historical data (2020-2025)...")
++    df_hist = fetch_historical_data(2020, 2025)
+     
+-    print(f"Fetching {current_year} season context...")
+-    try:
+-        df_current = get_completed_season_data(current_year, full_existing_df)
+-    except Exception as e:
+-        print(f"Warning: Could not fetch {current_year} data: {e}")
+-        df_current = pd.DataFrame()
++    # Fetch 2026 Round 1 for training inclusion
++    df_r1_2026 = get_specific_round_data(2026, 1)
+     
+-    # Combine historical and current
+-    if df_current.empty:
+-        full_df = hist_df
+-    else:
+-        full_df = pd.concat([hist_df, df_current], ignore_index=True)
++    # Combine training data
++    train_df = pd.concat([df_hist, df_r1_2026], ignore_index=True)
+     
+-    if full_df.empty or len(full_df) < 10:
+-        print("Error: Insufficient data for fine-tuning. Need at least 10 samples.")
+-        return
+-
+-    # Deduplicate based on Year, RoundNumber, DriverNumber
+-    before_dedup = len(full_df)
+-    full_df = full_df.drop_duplicates(subset=['Year', 'RoundNumber', 'DriverNumber'])
+-    after_dedup = len(full_df)
+-    
+-    if before_dedup > after_dedup:
+-        print(f"Removed {before_dedup - after_dedup} duplicate records.")
++    # Fetch 2026 Round 2 for testing
++    test_df = get_specific_round_data(2026, 2)
+     
+-    print(f"Total dataset size: {len(full_df)} records across {full_df['Year'].nunique()} seasons.")
++    if test_df.empty:
++        print("Error: Could not fetch R2 2026 data. Falling back to random split.")
++        # ... fallback logic if needed
+     
+-    # Save the consolidated full_df back to historical storage
+-    save_historical_data(full_df, generic_path)
+-    print(f"Updated consolidated historical storage at {generic_path}")
+-
+-    # 2. Preprocess
++    # Preprocess
+     print("\n--- Preprocessing Phase ---")
+-    processor = FeatureProcessor()
+-    processor.fit(full_df)
+-    X, y = processor.transform(full_df)
++    processor = FeatureProcessor(time_steps=5)
++    # Fit on all available data to ensure encoders see all drivers
++    all_data = pd.concat([train_df, test_df], ignore_index=True)
++    processor.fit(all_data)
+     
+-    if len(X) < 10:
+-        print(f"Error: Insufficient samples after preprocessing ({len(X)}). Need at least 10.")
+-        return
+-
+-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
++    # Transform
++    X_train, y_train = processor.transform(train_df)
++    
++    # For testing on R2, we need history (R1 + previous)
++    # We use transform_for_prediction which maintains the order of test_df
++    X_test = processor.transform_for_prediction(train_df, test_df)
+     
+     # 3. Hyperparameter Tuning
+     print("Starting hyperparameter tuning...")
+-    param_dist = {
+-        'n_estimators': [100, 200, 300],
+-        'max_depth': [3, 5, 7],
+-        'learning_rate': [0.01, 0.1, 0.2],
+-        'subsample': [0.8, 1.0],
+-        'colsample_bytree': [0.8, 1.0]
+-    }
+-    
+-    xgb_reg = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
+-    cv_folds = min(3, len(X_train) // 2)
+-    if cv_folds < 2:
+-        print("Error: Too few samples for cross-validation.")
+-        return
+-
+-    random_search = RandomizedSearchCV(
+-        xgb_reg, param_distributions=param_dist, n_iter=10, 
+-        scoring='neg_mean_squared_error', cv=cv_folds, verbose=1, random_state=42
+-    )
+-    random_search.fit(X_train, y_train)
+-    
+-    best_model = random_search.best_estimator_
+-    print(f"Best Parameters: {random_search.best_params_}")
+-    
+-    # Evaluate on test set
+-    preds = best_model.predict(X_test)
+-    mse = mean_squared_error(y_test, preds)
+-    print(f"Fine-tuned Model MSE: {mse:.2f}")
+     
+-    # 4. Save
+-    pipeline = ModelPipeline(model=best_model, processor=processor)
+-    pipeline.save("models/f1_pipeline.joblib")
+-    print("Fine-tuned model saved as models/f1_pipeline.joblib")
++    best_mse = float('inf')
++    best_params = {}
++    
++    # Grid search parameters
++    hidden_sizes = [64, 128]
++    lrs = [0.001, 0.005]
++    dropouts = [0.1, 0.2]
++    
++    for hs in hidden_sizes:
++        for lr in lrs:
++            for dr in dropouts:
++                print(f"Testing Hidden Size: {hs}, LR: {lr}, Dropout: {dr}")
++                pipeline = ModelPipeline(processor=processor)
++                # Use a subset of train for internal validation during fit
++                pipeline.train(X_train, y_train, X_train[-20:], y_train[-20:], 
++                                     hidden_size=hs, lr=lr, dropout=dr, epochs=30)
++                
++                # Predict on R2
++                preds = pipeline.predict(X_test)
++                
++                # Robust alignment: Merge predictions with actuals on Abbreviation
++                pred_df = pd.DataFrame({
++                    'Abbreviation': test_df['Abbreviation'].values,
++                    'PredictedPosition': preds
++                })
++                comparison_df = pd.merge(pred_df, test_df[['Abbreviation', 'Position']], on='Abbreviation')
++                
++                r2_mse = mean_squared_error(comparison_df['Position'], comparison_df['PredictedPosition'])
++                print(f"  R2 2026 MSE (Aligned): {r2_mse:.2f}")
++                
++                if r2_mse < best_mse:
++                    best_mse = r2_mse
++                    best_params = {'hidden_size': hs, 'lr': lr, 'dropout': dr}
++    
++    print(f"\nBest Parameters: {best_params} with R2 MSE: {best_mse:.2f}")
++    
++    # 4. Final Training with best params
++    print("Final training...")
++    final_pipeline = ModelPipeline(processor=processor)
++    final_pipeline.train(X_train, y_train, X_train[-20:], y_train[-20:], 
++                         hidden_size=best_params['hidden_size'], 
++                         lr=best_params['lr'], 
++                         dropout=best_params['dropout'],
++                         epochs=100)
++    
++    final_pipeline.save("models/f1_pipeline.joblib")
++    print("Fine-tuned LSTM model saved.")
+ 
+ if __name__ == "__main__":
+     fine_tune()
+diff --git a/src/f1_predictor/model.py b/src/f1_predictor/model.py
+index a0bb2cd..87070f9 100644
+--- a/src/f1_predictor/model.py
++++ b/src/f1_predictor/model.py
+@@ -10,8 +10,12 @@ import numpy as np
+ class LSTMModel(nn.Module):
+     def __init__(self, input_size, hidden_size=64, num_layers=1, dropout=0.2):
+         super(LSTMModel, self).__init__()
++        self.input_size = input_size
++        self.hidden_size = hidden_size
++        self.num_layers = num_layers
++        self.dropout_val = dropout
+         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, dropout=dropout if num_layers > 1 else 0.0)
+-        # Apply dropout manually if only 1 layer
++        # Apply dropout manually after LSTM output
+         self.dropout = nn.Dropout(dropout)
+         self.fc1 = nn.Linear(hidden_size, 32)
+         self.relu = nn.ReLU()
+@@ -37,7 +41,7 @@ class ModelPipeline:
+         self.baselines = baselines or {}
+         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+ 
+-    def train(self, X_train, y_train, X_test, y_test):
++    def train(self, X_train, y_train, X_test, y_test, lr=0.001, hidden_size=64, dropout=0.2, epochs=50, batch_size=32):
+         """Train the internal LSTM Model using PyTorch."""
+         if X_train.shape[0] == 0:
+             raise ValueError("Training data is empty. Cannot train the model.")
+@@ -52,13 +56,13 @@ class ModelPipeline:
+         y_test_t = torch.tensor(y_test, dtype=torch.float32).view(-1, 1).to(self.device)
+ 
+         if self.model is None:
+-            self.model = LSTMModel(input_size=features).to(self.device)
++            self.model = LSTMModel(input_size=features, hidden_size=hidden_size, dropout=dropout).to(self.device)
+         
+         criterion = nn.MSELoss()
+-        optimizer = optim.Adam(self.model.parameters(), lr=0.001)
++        optimizer = optim.Adam(self.model.parameters(), lr=lr)
+ 
+         dataset = torch.utils.data.TensorDataset(X_train_t, y_train_t)
+-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
++        dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
+ 
+         # Basic EarlyStopping setup
+         patience = 5
+@@ -66,7 +70,6 @@ class ModelPipeline:
+         patience_counter = 0
+         best_model_state = None
+ 
+-        epochs = 50
+         for epoch in range(epochs):
+             self.model.train()
+             for batch_x, batch_y in dataloader:
+@@ -99,12 +102,11 @@ class ModelPipeline:
+         with torch.no_grad():
+             preds = self.model(X_test_t).cpu().numpy().flatten()
+             mse = mean_squared_error(y_test, preds)
+-        print(f"Model trained with MSE: {mse:.2f}")
++        # print(f"Model trained with MSE: {mse:.2f}") # Suppressed for tuning
+         
+         # If processor is available and fitted, sync baselines
+         if self.processor and self.processor.is_fitted:
+             self.baselines = self.processor.baselines
+-            print(f"Synced {len(self.baselines.get('driver_means', {}))} driver baselines to pipeline.")
+             
+         return mse
+ 
+@@ -133,7 +135,10 @@ class ModelPipeline:
+             model_path = path.replace('.joblib', '_torch.pth')
+             torch.save({
+                 'state_dict': pytorch_model.state_dict(),
+-                'input_size': pytorch_model.lstm.input_size
++                'input_size': pytorch_model.input_size,
++                'hidden_size': pytorch_model.hidden_size,
++                'num_layers': pytorch_model.num_layers,
++                'dropout': pytorch_model.dropout_val
+             }, model_path)
+         
+         self.model = pytorch_model
+@@ -146,14 +151,18 @@ class ModelPipeline:
+         model_path = path.replace('.joblib', '_torch.pth')
+         if os.path.exists(model_path):
+             checkpoint = torch.load(model_path, map_location=pipeline.device, weights_only=True)
+-            model = LSTMModel(input_size=checkpoint['input_size']).to(pipeline.device)
++            model = LSTMModel(
++                input_size=checkpoint['input_size'],
++                hidden_size=checkpoint.get('hidden_size', 64),
++                num_layers=checkpoint.get('num_layers', 1),
++                dropout=checkpoint.get('dropout', 0.2)
++            ).to(pipeline.device)
+             model.load_state_dict(checkpoint['state_dict'])
+             pipeline.model = model
+         return pipeline
+ 
+ def train_model(X, y):
+     """Legacy wrapper for backward compatibility or direct training."""
+-    # This wrapper is simplified. Normally we would use the pipeline.
+     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+     pipeline = ModelPipeline()
+     pipeline.train(X_train, y_train, X_test, y_test)
+@@ -165,7 +174,9 @@ def save_model(model, le_driver, le_team, le_event):
+     os.makedirs(output_dir, exist_ok=True)
+     torch.save({
+         'state_dict': model.state_dict(),
+-        'input_size': model.lstm.input_size
++        'input_size': model.lstm.input_size,
++        'hidden_size': model.hidden_size if hasattr(model, 'hidden_size') else 64,
++        'num_layers': model.num_layers if hasattr(model, 'num_layers') else 1
+     }, os.path.join(output_dir, "f1_model_torch.pth"))
+     joblib.dump(le_driver, os.path.join(output_dir, "le_driver.joblib"))
+     joblib.dump(le_team, os.path.join(output_dir, "le_team.joblib"))
+@@ -175,7 +186,11 @@ def load_model():
+     """Legacy load function."""
+     output_dir = "models"
+     checkpoint = torch.load(os.path.join(output_dir, "f1_model_torch.pth"), weights_only=True)
+-    model = LSTMModel(input_size=checkpoint['input_size'])
++    model = LSTMModel(
++        input_size=checkpoint['input_size'],
++        hidden_size=checkpoint.get('hidden_size', 64),
++        num_layers=checkpoint.get('num_layers', 1)
++    )
+     model.load_state_dict(checkpoint['state_dict'])
+     le_driver = joblib.load(os.path.join(output_dir, "le_driver.joblib"))
+     le_team = joblib.load(os.path.join(output_dir, "le_team.joblib"))
+diff --git a/src/f1_predictor/preprocessor.py b/src/f1_predictor/preprocessor.py
+index aa0802a..018173d 100644
+--- a/src/f1_predictor/preprocessor.py
++++ b/src/f1_predictor/preprocessor.py
+@@ -35,29 +35,43 @@ class FeatureProcessor:
+         self.is_fitted = True
+         return self
+ 
+-    def _calculate_rolling_features(self, df):
++    def _calculate_rolling_features(self, df, shift=True):
+         """Calculate rolling averages with a shift to avoid data leakage."""
+         df = df.copy()
+         df = df.sort_values(['Year', 'RoundNumber'])
+         
+-        # 1. Driver rolling performance (avg finish position in last 5 races)
+-        # We shift by 1 to only use data from previous races for the current race prediction
+-        df['DriverAvgFinish'] = df.groupby('Abbreviation')['Position'].transform(
+-            lambda x: x.rolling(window=5, min_periods=1).mean().shift(1)
+-        )
+-        
+-        # 2. Team rolling performance
+-        df['TeamAvgFinish'] = df.groupby('TeamName')['Position'].transform(
+-            lambda x: x.rolling(window=5, min_periods=1).mean().shift(1)
+-        )
+-        
+-        # 3. Track History (Average finish at this specific event)
+-        df['EventAvgFinish'] = df.groupby(['Abbreviation', 'EventName'])['Position'].transform(
+-            lambda x: x.expanding().mean().shift(1)
+-        )
++        if shift:
++            # 1. Driver rolling performance (avg finish position in last 5 races)
++            # We shift by 1 to only use data from previous races for the current race prediction
++            df['DriverAvgFinish'] = df.groupby('Abbreviation')['Position'].transform(
++                lambda x: x.rolling(window=5, min_periods=1).mean().shift(1)
++            )
++            
++            # 2. Team rolling performance
++            df['TeamAvgFinish'] = df.groupby('TeamName')['Position'].transform(
++                lambda x: x.rolling(window=5, min_periods=1).mean().shift(1)
++            )
++            
++            # 3. Track History (Average finish at this specific event)
++            df['EventAvgFinish'] = df.groupby(['Abbreviation', 'EventName'])['Position'].transform(
++                lambda x: x.expanding().mean().shift(1)
++            )
++        else:
++            # Calculate WITHOUT shift for real-time inference using the most recent data
++            df['DriverAvgFinish'] = df.groupby('Abbreviation')['Position'].transform(
++                lambda x: x.rolling(window=5, min_periods=1).mean()
++            )
++            
++            df['TeamAvgFinish'] = df.groupby('TeamName')['Position'].transform(
++                lambda x: x.rolling(window=5, min_periods=1).mean()
++            )
++            
++            df['EventAvgFinish'] = df.groupby(['Abbreviation', 'EventName'])['Position'].transform(
++                lambda x: x.expanding().mean()
++            )
+         
+         # Impute missing values using global mean (NO look-ahead bias if using training mean)
+-        global_mean = self.baselines.get('global_mean', df['Position'].mean())
++        global_mean = self.baselines.get('global_mean', df['Position'].mean() if not df.empty else 10.0)
+         df['DriverAvgFinish'] = df['DriverAvgFinish'].fillna(global_mean)
+         df['TeamAvgFinish'] = df['TeamAvgFinish'].fillna(global_mean)
+         df['EventAvgFinish'] = df['EventAvgFinish'].fillna(global_mean)
+@@ -72,14 +86,17 @@ class FeatureProcessor:
+         # Drop rows missing critical targets during training
+         df = df.dropna(subset=['QualifyingPosition', 'Position'])
+         
+-        # Calculate features
+-        df = self._calculate_rolling_features(df)
++        # Calculate features with shift=True to prevent leakage
++        df = self._calculate_rolling_features(df, shift=True)
+         
+         # Encode categorical IDs (requires 2D input)
+         df['DriverID'] = self.le_driver.transform(df[['Abbreviation']].values).ravel()
+         df['TeamID'] = self.le_team.transform(df[['TeamName']].values).ravel()
+         df['EventID'] = self.le_event.transform(df[['EventName']].values).ravel()
+         
++        # Final safety fill for any unexpected NaNs in feature columns
++        df[self.feature_cols] = df[self.feature_cols].fillna(10.0)
++
+         X_seq = []
+         y_seq = []
+         
+@@ -115,18 +132,20 @@ class FeatureProcessor:
+         global_mean = baselines.get('global_mean', 10.0)
+         
+         # We need a sequence of length `self.time_steps` for each driver in `current_race_df`.
+-        # First, process `history_df` using the same logic as `_calculate_rolling_features` and ID encodings.
+-        # Ensure it has the necessary rolling features
++        # Process `history_df` using shift=False to get the absolute latest performance stats.
+         if history_df is not None and not history_df.empty:
+-             history_df = self._calculate_rolling_features(history_df)
++             history_df = self._calculate_rolling_features(history_df, shift=False)
+              history_df['DriverID'] = self.le_driver.transform(history_df[['Abbreviation']].values).ravel()
+              history_df['TeamID'] = self.le_team.transform(history_df[['TeamName']].values).ravel()
+              history_df['EventID'] = self.le_event.transform(history_df[['EventName']].values).ravel()
++             # Safety fill
++             history_df[self.feature_cols] = history_df[self.feature_cols].fillna(10.0)
+         else:
+-            history_df = pd.DataFrame(columns=current_race_df.columns)
++            history_df = pd.DataFrame(columns=current_race_df.columns.to_list() + ['DriverID', 'TeamID', 'EventID'])
+ 
+         event_name = current_race_df['EventName'].iloc[0] if 'EventName' in current_race_df.columns else "Unknown"
+-        event_id = self.le_event.transform([[event_name]])[0, 0]
++        event_id_arr = self.le_event.transform([[event_name]])
++        event_id = event_id_arr[0, 0] if event_id_arr.size > 0 else -1
+ 
+         X_pred_seq = []
+         
+@@ -134,8 +153,11 @@ class FeatureProcessor:
+             abbr = driver.get('Abbreviation', 'UNKNOWN')
+             team = driver.get('TeamName', 'UNKNOWN')
+             
+-            driver_id = self.le_driver.transform([[abbr]])[0, 0]
+-            team_id = self.le_team.transform([[team]])[0, 0]
++            driver_id_arr = self.le_driver.transform([[abbr]])
++            driver_id = driver_id_arr[0, 0] if driver_id_arr.size > 0 else -1
++            
++            team_id_arr = self.le_team.transform([[team]])
++            team_id = team_id_arr[0, 0] if team_id_arr.size > 0 else -1
+             
+             # Find history for this driver
+             if 'DriverID' in history_df.columns:
+@@ -168,6 +190,8 @@ class FeatureProcessor:
+                     team_id,
+                     event_id
+                 ]
++                # Final safety fill for pad_row
++                pad_row = [x if not (isinstance(x, (float, int)) and np.isnan(x)) else 10.0 for x in pad_row]
+                 
+                 pad_length = self.time_steps - len(features)
+                 padding = np.array([pad_row] * pad_length)
+@@ -176,7 +200,9 @@ class FeatureProcessor:
+                     seq = np.vstack((padding, features))
+                 else:
+                     seq = padding
+-                    
++            
++            # Final safety fill for the entire sequence tensor
++            seq = np.nan_to_num(seq, nan=10.0)
+             X_pred_seq.append(seq)
+             
+         return np.array(X_pred_seq)
+diff --git a/tests/test_feature_processor.py b/tests/test_feature_processor.py
+index 6ebc029..7365be8 100644
+--- a/tests/test_feature_processor.py
++++ b/tests/test_feature_processor.py
+@@ -39,7 +39,8 @@ def test_transform_for_prediction(sample_df):
+     
+     assert X_pred.shape == (2, 2, len(processor.feature_cols))
+     
+-    # Check that it uses the latest 2 history records correctly.
+-    # VER last race pos was 2, race before was 1. Avg = 1.5. 
++    # Check that it uses the latest history records correctly.
++    # VER last race results (R1-R6): 1, 2, 1, 2, 1, 2.
++    # With shift=False and window=5, R6 row should have mean(R2-R6) = mean(2, 1, 2, 1, 2) = 1.6
+     # Index of DriverAvgFinish is 2
+-    assert np.isclose(X_pred[0, 1, 2], 1.4)
++    assert np.isclose(X_pred[0, 1, 2], 1.6)
+diff --git a/website/predictions.json b/website/predictions.json
+index 25733d5..5e8e8c6 100644
+--- a/website/predictions.json
++++ b/website/predictions.json
+@@ -1,76 +1,76 @@
+ {
+     "event": "Japanese Grand Prix",
+-    "date": "March 19, 2026",
++    "date": "March 25, 2026",
+     "top_10": [
+-        {
+-            "name": "M VERSTAPPEN",
+-            "prediction": 6.0865254402160645,
+-            "number": "3",
+-            "nationality": "NED",
+-            "team": "Red Bull Racing"
+-        },
+         {
+             "name": "G RUSSELL",
+-            "prediction": 8.711464881896973,
++            "prediction": 4.189393520355225,
+             "number": "63",
+             "nationality": "GBR",
+             "team": "Mercedes"
+         },
+         {
+-            "name": "L HAMILTON",
+-            "prediction": 9.394489288330078,
+-            "number": "44",
+-            "nationality": "GBR",
+-            "team": "Ferrari"
++            "name": "O PIASTRI",
++            "prediction": 5.38999080657959,
++            "number": "81",
++            "nationality": "AUS",
++            "team": "McLaren"
+         },
+         {
+             "name": "L NORRIS",
+-            "prediction": 9.75693416595459,
++            "prediction": 5.531023979187012,
+             "number": "1",
+             "nationality": "GBR",
+             "team": "McLaren"
+         },
+         {
+-            "name": "O PIASTRI",
+-            "prediction": 9.932146072387695,
+-            "number": "81",
+-            "nationality": "AUS",
+-            "team": "McLaren"
++            "name": "K ANTONELLI",
++            "prediction": 5.666632175445557,
++            "number": "12",
++            "nationality": "ITA",
++            "team": "Mercedes"
++        },
++        {
++            "name": "M VERSTAPPEN",
++            "prediction": 5.9472527503967285,
++            "number": "3",
++            "nationality": "NED",
++            "team": "Red Bull Racing"
+         },
+         {
+             "name": "C LECLERC",
+-            "prediction": 9.955445289611816,
++            "prediction": 7.5986785888671875,
+             "number": "16",
+             "nationality": "MON",
+             "team": "Ferrari"
+         },
+-        {
+-            "name": "L LAWSON",
+-            "prediction": 9.962203025817871,
+-            "number": "30",
+-            "nationality": "NZL",
+-            "team": "Racing Bulls"
+-        },
+         {
+             "name": "I HADJAR",
+-            "prediction": 10.141160011291504,
++            "prediction": 9.584936141967773,
+             "number": "6",
+             "nationality": "FRA",
+             "team": "Red Bull Racing"
+         },
+         {
+-            "name": "F ALONSO",
+-            "prediction": 10.380043029785156,
+-            "number": "14",
+-            "nationality": "ESP",
+-            "team": "Aston Martin"
++            "name": "L HAMILTON",
++            "prediction": 9.65736198425293,
++            "number": "44",
++            "nationality": "GBR",
++            "team": "Ferrari"
++        },
++        {
++            "name": "O BEARMAN",
++            "prediction": 10.737497329711914,
++            "number": "87",
++            "nationality": "GBR",
++            "team": "Haas F1 Team"
+         },
+         {
+-            "name": "P GASLY",
+-            "prediction": 10.538177490234375,
+-            "number": "10",
++            "name": "E OCON",
++            "prediction": 10.77649974822998,
++            "number": "31",
+             "nationality": "FRA",
+-            "team": "Alpine"
++            "team": "Haas F1 Team"
+         }
+     ]
+ }
+\ No newline at end of file

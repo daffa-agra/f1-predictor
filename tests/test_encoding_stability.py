@@ -49,10 +49,11 @@ def test_encoding_stability_unseen_data(historical_df):
     assert np.all(X_pred[0, :, -2] == -1) # TeamID
     assert np.all(X_pred[0, :, -1] == -1) # EventID
     
-    # 3. Assert baseline statistics use global mean for unseen entries
-    global_mean = historical_df['Position'].mean()
+    # 3. Assert baseline statistics use global mean for unseen entries (scaled to ~0)
     # Indices: DriverAvg=2, TeamAvg=3, EventAvg=4
-    assert np.all(X_pred[0, :, 2] == global_mean)
+    assert np.allclose(X_pred[0, :, 2], 0.0, atol=1e-5)
+    assert np.allclose(X_pred[0, :, 3], 0.0, atol=1e-5)
+    assert np.allclose(X_pred[0, :, 4], 0.0, atol=1e-5)
 
     # 4. Verify the rest of the pipeline functions
     # Fit processor and prepare training data

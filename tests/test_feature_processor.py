@@ -39,7 +39,8 @@ def test_transform_for_prediction(sample_df):
     
     assert X_pred.shape == (2, 2, len(processor.feature_cols))
     
-    # Check that it uses the latest 2 history records correctly.
-    # VER last race pos was 2, race before was 1. Avg = 1.5. 
+    # Check that it uses the latest history records correctly.
+    # VER last race results (R1-R6): 1, 2, 1, 2, 1, 2.
+    # With shift=False and window=5, R6 row should have mean(R2-R6) = mean(2, 1, 2, 1, 2) = 1.6
     # Index of DriverAvgFinish is 2
-    assert np.isclose(X_pred[0, 1, 2], 1.4)
+    assert np.isclose(X_pred[0, 1, 2], 1.6)

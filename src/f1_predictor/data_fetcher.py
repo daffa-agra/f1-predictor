@@ -56,7 +56,7 @@ def fetch_race_results(year, round_num):
     """Fetch race results for a specific year and round."""
     try:
         session = fastf1.get_session(year, round_num, 'R')
-        session.load(laps=False, telemetry=False, weather=False, messages=False)
+        session.load(laps=False, telemetry=False, weather=True, messages=False)
         results = session.results
         # Select relevant columns
         cols = ['DriverNumber', 'BroadcastName', 'Abbreviation', 'TeamName', 'Position', 'GridPosition', 'Points', 'Status']
@@ -64,6 +64,16 @@ def fetch_race_results(year, round_num):
         df['Year'] = year
         df['RoundNumber'] = round_num
         df['EventName'] = session.event['EventName']
+        
+        # Add weather data
+        weather = session.weather_data
+        if not weather.empty:
+            df['AirTemp'] = weather['AirTemp'].mean()
+            df['Rainfall'] = 1 if weather['Rainfall'].any() else 0
+        else:
+            df['AirTemp'] = 25.0 # Default
+            df['Rainfall'] = 0
+            
         return df
     except Exception as e:
         print(f"Error fetching race results for {year} Round {round_num}: {e}")
@@ -79,6 +89,23 @@ def fetch_qualifying_results(year, round_num):
         cols = ['DriverNumber', 'Position', 'Q1', 'Q2', 'Q3']
         df = results[cols].copy()
         df = df.rename(columns={'Position': 'QualifyingPosition'})
+        
+        # Calculate QDelta
+        # FastF1 returns Q1, Q2, Q3 as pd.Timedelta
+        q_cols = ['Q1', 'Q2', 'Q3']
+        for col in q_cols:
+            df[col] = pd.to_timedelta(df[col])
+            
+        # Get best time for each driver in seconds
+        driver_best = df[q_cols].min(axis=1).dt.total_seconds()
+        # Session best time is the minimum across all drivers
+        session_best = driver_best.min()
+        
+        if pd.notna(session_best) and session_best > 0:
+            df['QDelta'] = (driver_best - session_best) / session_best
+        else:
+            df['QDelta'] = pd.NA
+            
         df['Year'] = year
         df['RoundNumber'] = round_num
         return df
@@ -103,7 +130,7 @@ def fetch_season_data(year):
         
         if not race_df.empty and not qual_df.empty:
             # Merge race and qualifying data
-            merged = pd.merge(race_df, qual_df[['DriverNumber', 'QualifyingPosition']], on='DriverNumber', how='left')
+            merged = pd.merge(race_df, qual_df[['DriverNumber', 'QualifyingPosition', 'QDelta']], on='DriverNumber', how='left')
             all_results.append(merged)
             
     if all_results:
@@ -192,9 +219,14 @@ def fetch_2026_stats():
             if race_date_cmp < now:
                 round_num = race['RoundNumber']
                 print(f"Fetching 2026 Round {round_num}: {race['EventName']}")
-                df = fetch_race_results(2026, round_num)
-                if not df.empty:
-                    all_results.append(df)
+                race_df = fetch_race_results(2026, round_num)
+                qual_df = fetch_qualifying_results(2026, round_num)
+                
+                if not race_df.empty and not qual_df.empty:
+                    merged = pd.merge(race_df, qual_df[['DriverNumber', 'QualifyingPosition', 'QDelta']], on='DriverNumber', how='left')
+                    all_results.append(merged)
+                elif not race_df.empty:
+                    all_results.append(race_df)
     
     if all_results:
         return pd.concat(all_results, ignore_index=True)

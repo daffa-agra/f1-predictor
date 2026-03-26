@@ -39,6 +39,21 @@ def evaluate(year, rounds):
         qual_df = pd.merge(qual_df, results, on='DriverNumber', how='left')
         qual_df['EventName'] = session.event['EventName']
         
+        # Calculate QDelta
+        for q_col in ['Q1', 'Q2', 'Q3']:
+            if q_col in qual_df.columns:
+                if qual_df[q_col].dtype == object:
+                    qual_df[q_col] = pd.to_timedelta(qual_df[q_col]).dt.total_seconds()
+                elif pd.api.types.is_timedelta64_dtype(qual_df[q_col]):
+                    qual_df[q_col] = qual_df[q_col].dt.total_seconds()
+        if 'Q1' in qual_df.columns:
+            qual_df['DriverBestQTime'] = qual_df[['Q1', 'Q2', 'Q3']].min(axis=1)
+            session_best = qual_df['DriverBestQTime'].min()
+            if pd.notna(session_best) and session_best > 0:
+                qual_df['QDelta'] = (qual_df['DriverBestQTime'] - session_best) / session_best
+            else:
+                qual_df['QDelta'] = np.nan
+        
         # Filter history for current round
         hist_df = full_hist_df[~((full_hist_df['Year'] == year) & (full_hist_df['RoundNumber'] >= r))]
 
@@ -47,7 +62,9 @@ def evaluate(year, rounds):
         preds = pipeline.predict(X_pred)
         
         pred_df = qual_df.copy()
-        pred_df['PredictedPosition'] = preds
+        pred_df['PredictedScore'] = preds
+        # Rank: highest score is 1st
+        pred_df['PredictedPosition'] = pred_df['PredictedScore'].rank(ascending=False, method='min').astype(int)
         pred_df = pred_df.sort_values('PredictedPosition')
         
         metrics = calculate_metrics(pred_df, actual_df)

@@ -31,12 +31,13 @@ jobs:
           path: |
             data/cache
             data/historical_data.csv
-          key: f1-data-cache-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-${{ github.run_id }}
+          key: f1-data-cache-v2-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-${{ github.run_id }}
           restore-keys: |
-            f1-data-cache-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-
+            f1-data-cache-v2-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}-
 
       - name: Install dependencies
         run: |
+          pip uninstall -y xgboost
           pip install -e .
           pip install pytest
 
