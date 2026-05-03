@@ -4,70 +4,70 @@
     "top_10": [
         {
             "name": "V BOTTAS",
-            "prediction": -7.261131763458252,
+            "prediction": -6.706669807434082,
             "number": "77",
             "nationality": "FIN",
             "team": "Cadillac"
         },
         {
             "name": "S PEREZ",
-            "prediction": -6.9264092445373535,
+            "prediction": -6.515551567077637,
             "number": "11",
             "nationality": "MEX",
             "team": "Cadillac"
         },
         {
-            "name": "A ALBON",
-            "prediction": -6.539859294891357,
-            "number": "23",
-            "nationality": "THA",
-            "team": "Williams"
-        },
-        {
             "name": "F COLAPINTO",
-            "prediction": -6.463858604431152,
+            "prediction": -6.256610870361328,
             "number": "43",
             "nationality": "ARG",
             "team": "Alpine"
         },
         {
+            "name": "A ALBON",
+            "prediction": -6.178524971008301,
+            "number": "23",
+            "nationality": "THA",
+            "team": "Williams"
+        },
+        {
             "name": "L STROLL",
-            "prediction": -6.387387752532959,
+            "prediction": -6.0400004386901855,
             "number": "18",
             "nationality": "CAN",
             "team": "Aston Martin"
         },
         {
-            "name": "F ALONSO",
-            "prediction": -6.3839545249938965,
-            "number": "14",
-            "nationality": "ESP",
-            "team": "Aston Martin"
-        },
-        {
-            "name": "N HULKENBERG",
-            "prediction": -6.293306827545166,
-            "number": "27",
-            "nationality": "GER",
-            "team": "Audi"
-        },
-        {
             "name": "G BORTOLETO",
-            "prediction": -6.1586012840271,
+            "prediction": -5.920540809631348,
             "number": "5",
             "nationality": "BRA",
             "team": "Audi"
         },
         {
+            "name": "N HULKENBERG",
+            "prediction": -5.9053826332092285,
+            "number": "27",
+            "nationality": "GER",
+            "team": "Audi"
+        },
+        {
             "name": "P GASLY",
-            "prediction": -6.022747993469238,
+            "prediction": -5.7874650955200195,
             "number": "10",
             "nationality": "FRA",
             "team": "Alpine"
         },
         {
+            "name": "F ALONSO",
+            "prediction": -5.691539764404297,
+            "number": "14",
+            "nationality": "ESP",
+            "team": "Aston Martin"
+        },
+        {
             "name": "A LINDBLAD",
-            "prediction": -5.5706353187561035,
+            "prediction": -5.580482006072998,
             "number": "41",
             "nationality": "GBR",
             "team": "Racing Bulls"
