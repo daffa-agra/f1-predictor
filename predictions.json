@@ -3,74 +3,74 @@
     "date": "June 06, 2026",
     "top_10": [
         {
-            "name": "DRIVER 18",
-            "prediction": -8.393353462219238,
-            "number": "18",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
-        },
-        {
-            "name": "DRIVER 14",
-            "prediction": -8.269525527954102,
-            "number": "14",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
-        },
-        {
-            "name": "DRIVER 77",
-            "prediction": -8.16964340209961,
+            "name": "V BOTTAS",
+            "prediction": -7.154700756072998,
             "number": "77",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
+            "nationality": "FIN",
+            "team": "Cadillac"
         },
         {
-            "name": "DRIVER 87",
-            "prediction": -8.032987594604492,
-            "number": "87",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
+            "name": "A ALBON",
+            "prediction": -7.01219367980957,
+            "number": "23",
+            "nationality": "THA",
+            "team": "Williams"
         },
         {
-            "name": "DRIVER 11",
-            "prediction": -7.9134039878845215,
+            "name": "S PEREZ",
+            "prediction": -6.977725505828857,
             "number": "11",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
+            "nationality": "MEX",
+            "team": "Cadillac"
         },
         {
-            "name": "DRIVER 31",
-            "prediction": -7.788407802581787,
-            "number": "31",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
+            "name": "F ALONSO",
+            "prediction": -6.913828372955322,
+            "number": "14",
+            "nationality": "ESP",
+            "team": "Aston Martin"
         },
         {
-            "name": "DRIVER 5",
-            "prediction": -7.653074741363525,
+            "name": "L STROLL",
+            "prediction": -6.1528472900390625,
+            "number": "18",
+            "nationality": "CAN",
+            "team": "Aston Martin"
+        },
+        {
+            "name": "C SAINZ",
+            "prediction": -6.150051116943359,
+            "number": "55",
+            "nationality": "ESP",
+            "team": "Williams"
+        },
+        {
+            "name": "G BORTOLETO",
+            "prediction": -5.696327209472656,
             "number": "5",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
+            "nationality": "BRA",
+            "team": "Audi"
         },
         {
-            "name": "DRIVER 41",
-            "prediction": -7.472168445587158,
+            "name": "A LINDBLAD",
+            "prediction": -4.943737030029297,
             "number": "41",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
+            "nationality": "GBR",
+            "team": "Racing Bulls"
         },
         {
-            "name": "DRIVER 43",
-            "prediction": -7.287242412567139,
-            "number": "43",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
-        },
-        {
-            "name": "DRIVER 27",
-            "prediction": -7.097296237945557,
+            "name": "N HULKENBERG",
+            "prediction": -4.633552074432373,
             "number": "27",
-            "nationality": "UNKNOWN",
-            "team": "Formula 1 Entry"
+            "nationality": "GER",
+            "team": "Audi"
+        },
+        {
+            "name": "E OCON",
+            "prediction": -4.57234525680542,
+            "number": "31",
+            "nationality": "FRA",
+            "team": "Haas F1 Team"
         }
     ]
 }
