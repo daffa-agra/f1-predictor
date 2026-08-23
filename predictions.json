@@ -1,73 +1,73 @@
 {
     "event": "Dutch Grand Prix",
-    "date": "August 22, 2026",
+    "date": "August 23, 2026",
     "top_10": [
         {
             "name": "DRIVER 11",
-            "prediction": -7.416993141174316,
+            "prediction": -7.7985429763793945,
             "number": "11",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 77",
-            "prediction": -7.29611349105835,
+            "prediction": -7.605574131011963,
             "number": "77",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 87",
-            "prediction": -7.123819828033447,
+            "prediction": -7.3026275634765625,
             "number": "87",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 18",
-            "prediction": -6.984212398529053,
+            "prediction": -7.084961414337158,
             "number": "18",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 14",
-            "prediction": -6.79736328125,
+            "prediction": -6.809329032897949,
             "number": "14",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 55",
-            "prediction": -6.588866710662842,
+            "prediction": -6.540716171264648,
             "number": "55",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 23",
-            "prediction": -6.294924736022949,
+            "prediction": -6.179971218109131,
             "number": "23",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 31",
-            "prediction": -6.0274810791015625,
+            "prediction": -5.888278007507324,
             "number": "31",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 43",
-            "prediction": -5.68378210067749,
+            "prediction": -5.502288341522217,
             "number": "43",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 27",
-            "prediction": -5.386279582977295,
+            "prediction": -5.177532196044922,
             "number": "27",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
