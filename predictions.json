@@ -1,73 +1,73 @@
 {
     "event": "Azerbaijan Grand Prix",
-    "date": "September 25, 2026",
+    "date": "September 26, 2026",
     "top_10": [
         {
             "name": "DRIVER 77",
-            "prediction": -7.214219570159912,
+            "prediction": -6.204323768615723,
             "number": "77",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 18",
-            "prediction": -7.1167168617248535,
+            "prediction": -6.075408935546875,
             "number": "18",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 11",
-            "prediction": -6.990660667419434,
+            "prediction": -5.9367570877075195,
             "number": "11",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 14",
-            "prediction": -6.876951217651367,
+            "prediction": -5.8280839920043945,
             "number": "14",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 27",
-            "prediction": -6.691285133361816,
+            "prediction": -5.642535209655762,
             "number": "27",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 5",
-            "prediction": -6.504494667053223,
+            "prediction": -5.483586311340332,
             "number": "5",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 12",
-            "prediction": -6.2415313720703125,
+            "prediction": -5.2675933837890625,
             "number": "12",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 41",
-            "prediction": -5.87648868560791,
+            "prediction": -4.980185508728027,
             "number": "41",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 31",
-            "prediction": -5.457367420196533,
+            "prediction": -4.6916303634643555,
             "number": "31",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 23",
-            "prediction": -4.930759429931641,
+            "prediction": -4.360651969909668,
             "number": "23",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
