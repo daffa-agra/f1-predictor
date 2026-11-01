@@ -1,73 +1,73 @@
 {
     "event": "Mexico City Grand Prix",
-    "date": "October 31, 2026",
+    "date": "November 01, 2026",
     "top_10": [
         {
             "name": "DRIVER 77",
-            "prediction": -5.8978705406188965,
+            "prediction": -7.1122517585754395,
             "number": "77",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 11",
-            "prediction": -5.647904396057129,
+            "prediction": -6.912135601043701,
             "number": "11",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 18",
-            "prediction": -5.492852210998535,
+            "prediction": -6.766575336456299,
             "number": "18",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 50",
-            "prediction": -5.289311408996582,
+            "prediction": -6.591109275817871,
             "number": "50",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 14",
-            "prediction": -5.0661211013793945,
+            "prediction": -6.401215076446533,
             "number": "14",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 23",
-            "prediction": -4.739084243774414,
+            "prediction": -6.151530742645264,
             "number": "23",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 55",
-            "prediction": -4.415406703948975,
+            "prediction": -5.8991923332214355,
             "number": "55",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 87",
-            "prediction": -3.940873146057129,
+            "prediction": -5.56060266494751,
             "number": "87",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 5",
-            "prediction": -3.459153413772583,
+            "prediction": -5.2100114822387695,
             "number": "5",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
         },
         {
             "name": "DRIVER 81",
-            "prediction": -3.105106830596924,
+            "prediction": -4.926255702972412,
             "number": "81",
             "nationality": "UNKNOWN",
             "team": "Formula 1 Entry"
